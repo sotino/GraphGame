@@ -109,7 +109,7 @@ public class EditorPane extends JPanel {
                 }
                 if (fileName != null) {
                     try {
-                        FileLoader.saveGraph(graphPanel.getGraphModel(), fileName);
+                        FileLoader.saveGraph((GraphObjectOriented) graphPanel.getGraphModel(), fileName);
                     } catch (UnsupportedEncodingException ex) {
                         Logger.getLogger(EditorPane.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (FileNotFoundException ex) {
@@ -127,14 +127,14 @@ public class EditorPane extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                mainFrame.loadGraph(graphPanel.getGraphModel());
+                mainFrame.loadGraph((GraphObjectOriented) graphPanel.getGraphModel());
             }
         });
 
         if (graph == null) {
             graph = new GraphObjectOriented();
         }
-        graphPanel = new GraphPanel(graph, false);
+        graphPanel = new GraphPanel(graph);
         graphPanel.setAutoLayout(false);
         graphPanel.setEditable(true);
         add(BorderLayout.CENTER, graphPanel);

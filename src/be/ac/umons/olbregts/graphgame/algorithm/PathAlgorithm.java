@@ -7,6 +7,7 @@ package be.ac.umons.olbregts.graphgame.algorithm;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -22,11 +23,12 @@ public interface PathAlgorithm {
 
     public void computeAStep();
 
-    public int getLastSelected();
-
-    public int getDistance(int index);
-
     public Strategy getStrategy(int index);
 
-    public ArrayList<Integer> getBlockedEdge(int index);
+    public String getLabel(int vertexId);
+
+    public Color getVertexColor(int vertexId);
+
+    public Color getEdgeColor(int originId, int destinationId);
+
 }

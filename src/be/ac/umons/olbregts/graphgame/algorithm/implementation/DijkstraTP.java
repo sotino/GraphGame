@@ -14,6 +14,7 @@ import be.ac.umons.olbregts.graphgame.model.Heap;
 import be.ac.umons.olbregts.graphgame.model.HeapElement;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -40,7 +41,7 @@ public class DijkstraTP implements PathAlgorithm {
         if (!(game instanceof ReachibilityGame)) {
             throw new IllegalGraphException("The objectif does not match. A ReachibilityGame is needed");
         }
-        if (!isValid(game.getGraph())) {
+        if (!isValid(game)) {
             throw new IllegalGraphException("The cost on edge can't be negative");
         }
         this.game = (ReachibilityGame) game.getGraph();
@@ -85,11 +86,6 @@ public class DijkstraTP implements PathAlgorithm {
     }
 
     @Override
-    public int getLastSelected() {
-        return lastSelected;
-    }
-
-    @Override
     public Strategy getStrategy(int index) {
         Heap<VertexHeapElement> heap = vertexsHeap.get(index);
         int choose = -1;
@@ -109,17 +105,44 @@ public class DijkstraTP implements PathAlgorithm {
     }
 
     @Override
-    public int getDistance(int index) {
-        Heap<VertexHeapElement> heap = vertexsHeap.get(index);
+    public String getLabel(int vertexId) {
+        Heap<VertexHeapElement> heap = vertexsHeap.get(vertexId);
         if (heap.isEmpty()) {
-            return Integer.MAX_VALUE;
+            return "+ inf";
         }
-        return heap.peek().distance;
+        int value = heap.peek().distance;
+        if(value == Integer.MAX_VALUE){
+          return "+ inf";
+        }
+        return "" + value;
     }
 
     @Override
-    public ArrayList<Integer> getBlockedEdge(int index) {
-        return blockedEdge.get(index);
+    public Color getVertexColor(int vertexId) {
+        if(vertexId == lastSelected)
+            return Color.BLUE;
+        for(int target : game.getWiningCondition()){
+            if(vertexId == target){
+                return Color.YELLOW;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Color getEdgeColor(int originId, int destinationId) {
+        for(int d : blockedEdge.get(originId)){
+            if(d == destinationId){
+                return Color.RED;
+            }
+        }
+        Strategy strategy = getStrategy(originId);
+        for(int d : strategy.getSelectedEdge()){
+            if(destinationId == d){
+                return Color.GREEN;
+            }
+        }
+        return null;
     }
 
     private void initializeTP() {

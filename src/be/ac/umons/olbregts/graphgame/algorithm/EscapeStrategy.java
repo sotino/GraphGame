@@ -54,4 +54,16 @@ public class EscapeStrategy implements Strategy {
         }
         return choose;
     }
+
+    public int getMainChoose() {
+        return mainChoose;
+    }
+
+    public int getEscapeChoose() {
+        return escapeChoose;
+    }
+
+    public int getLimitStep() {
+        return limitStep;
+    }
 }

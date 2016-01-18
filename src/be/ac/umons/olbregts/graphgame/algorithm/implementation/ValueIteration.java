@@ -12,6 +12,7 @@ import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -136,27 +137,46 @@ public class ValueIteration implements PathAlgorithm {
     }
 
     @Override
-    public int getLastSelected() {
-        return -1;
-    }
-
-    @Override
-    public int getDistance(int index) {
-        return vertexValues.get(index);
-    }
-
-    @Override
     public Strategy getStrategy(int index) {
         int distance = Integer.MAX_VALUE;
         if (escapeStrat[index] != -1) {
-            distance = getDistance(index) - (game.getGraph().getVertexCount() - 1) * W;
+            distance = vertexValues.get(index) - (game.getGraph().getVertexCount() - 1) * W;
         }
         return new EscapeStrategy(mainStrat[index], escapeStrat[index], distance);
     }
 
     @Override
-    public ArrayList<Integer> getBlockedEdge(int index) {
-        return new ArrayList<>();
+    public String getLabel(int vertexId) {
+        int value = vertexValues.get(vertexId);
+        if(value == Integer.MAX_VALUE){
+            return "+ inf";
+        }
+        if(value == Integer.MIN_VALUE){
+            return "- inf";
+        }
+        return "" + value;
+    }
+
+    @Override
+    public Color getVertexColor(int vertexId) {
+        for(int target : game.getWiningCondition()){
+            if(vertexId == target){
+                return Color.YELLOW;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Color getEdgeColor(int originId, int destinationId) {
+        EscapeStrategy strategy = (EscapeStrategy) getStrategy(originId);
+        if(destinationId == strategy.getMainChoose()){
+            return Color.GREEN;
+        }
+        if(destinationId == strategy.getEscapeChoose()){
+            return Color.GREEN.darker();
+        }
+        return null;
     }
 
     private ArrayList<Integer> clonePreviousResult() {

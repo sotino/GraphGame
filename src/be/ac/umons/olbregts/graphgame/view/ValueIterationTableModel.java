@@ -59,7 +59,7 @@ public class ValueIterationTableModel extends AbstractTableModel {
             ValueIteration vi = (ValueIteration) pa;
             String[] rowData = new String[vertexNumber * 3];
             for (int i = 0; i < vertexNumber; i++) {
-                rowData[i * 2] = (pa.getDistance(i) == Integer.MAX_VALUE ? "inf" : "" + pa.getDistance(i));
+                rowData[i * 2] = pa.getLabel(i);//pa.getDistance(i) == Integer.MAX_VALUE ? "inf" : "" + pa.getDistance(i));
                 rowData[i * 2 + 1] = pa.getStrategy(i).printChoose();
             }
             data.add(rowData);

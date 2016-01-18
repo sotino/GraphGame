@@ -12,6 +12,7 @@ import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -89,20 +90,6 @@ public class Attractor implements PathAlgorithm {
     }
 
     @Override
-    public int getLastSelected() {
-        return -1;
-    }
-
-    @Override
-    public int getDistance(int index) {
-        if (attractor[index]) {
-            return 0;
-        } else {
-            return Integer.MAX_VALUE;
-        }
-    }
-
-    @Override
     public Strategy getStrategy(int vertesId) {
         int selected = -1;
         if (attractor[vertesId]) {
@@ -122,7 +109,33 @@ public class Attractor implements PathAlgorithm {
     }
 
     @Override
-    public ArrayList<Integer> getBlockedEdge(int index) {
-        return new ArrayList<>();
+    public String getLabel(int vertexId) {
+        if (attractor[vertexId]) {
+            return "Attr";
+        } else {
+            return "Not Attr";
+        }
     }
+
+    @Override
+    public Color getVertexColor(int vertexId) {
+        for(int target : game.getWiningCondition()){
+            if(vertexId == target){
+                return Color.YELLOW;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public Color getEdgeColor(int originId, int destinationId) {
+        int[] selected = getStrategy(originId).getSelectedEdge();
+        for(int v : selected){
+            if(v == destinationId){
+                return Color.GREEN;
+            }
+        }
+        return null;
+    }
+
 }

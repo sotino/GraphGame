@@ -117,16 +117,16 @@ public class GraphView extends JPanel {
         applyAlgo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
+             //   try {
                     AlgoSelectionItem selected = (AlgoSelectionItem) algoSelector.getSelectedItem();
                     pathAlgorithm = selected.algo;
                     renderer = selected.renderer;
-                    pathAlgorithm.reset(graph);
+                   // pathAlgorithm.reset(graph);
                     enableComponents(commandPanel, true);
                     enableComponents(algorithmSelection, false);
-                } catch (IllegalGraphException ex) {
+              /*  } catch (IllegalGraphException ex) {
                     JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
-                }
+                }*/
             }
         });
 
@@ -168,26 +168,26 @@ public class GraphView extends JPanel {
         reload.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    pathAlgorithm.reset(graph);
+             //   try {
+                   // pathAlgorithm.reset(graph);
                     renderer.reset();
                     enableComponents(commandPanel, true);
-                } catch (IllegalGraphException ex) {
-                    JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
-                }
+           //     } catch (IllegalGraphException ex) {
+             //       JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
+               // }
             }
         });
 
         changeAlgo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                try {
-                    pathAlgorithm.reset(graph);
+             //   try {
+               //     pathAlgorithm.reset(graph);
                     renderer.reset();
                     enableComponents(commandPanel, true);
-                } catch (IllegalGraphException ex) {
-                    JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
-                }
+               // } catch (IllegalGraphException ex) {
+                 //   JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
+               // }
                 GraphView.this.graphPanel.resetView();
 
                 enableComponents(commandPanel, false);

@@ -5,6 +5,8 @@
 package be.ac.umons.olbregts.graphgame.view;
 
 import be.ac.umons.olbregts.graphgame.algorithm.PathAlgorithm;
+import be.ac.umons.olbregts.graphgame.model.Game;
+import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.Edge;
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.Vertex;
@@ -28,40 +30,35 @@ import java.util.ArrayList;
  */
 public class GraphPanel extends mxGraphComponent {
 
-    private static final String DESTINATION_STYLE = "shape=ellipse;fillColor=yellow";
+    //private static final String DESTINATION_STYLE = "shape=ellipse;fillColor=yellow";
     private static final String P1_STYLE = "shape=ellipse";
     private static final String P2_STYLE = "defaultVertex";
-    private GraphObjectOriented graphModel;
     private ArrayList<Object> vertexsView;
-    private Object[] lastSelected;
-    private boolean displayDistance;
-    private boolean autoLayout;
+    private Graph model;
+    private PathAlgorithm pathAlgorithm;
+    //private GraphObjectOriented graphModel;
+    //private Object[] lastSelected;
+    //private boolean displayDistance;
+    //private boolean autoLayout;
 
-    public GraphPanel(GraphObjectOriented graphModel, boolean displayDistance) {
+
+    public GraphPanel() {
+        this(new GraphObjectOriented());
+    }
+
+    public GraphPanel(Graph model) {
+        this(model, null);
+    }
+
+    public GraphPanel(Graph model, PathAlgorithm pathAlgorithm) {
         super(new mxGraph());
+        this.model = model;
+        this.pathAlgorithm = pathAlgorithm;
         getViewport().setOpaque(true);
         getViewport().setBackground(Color.WHITE);
-        this.graphModel = graphModel;
-        lastSelected = new Object[1];
         vertexsView = new ArrayList<>();
-        this.displayDistance = displayDistance;
-        autoLayout = true;
         graph.setAllowDanglingEdges(false);
         setEditable(false);
-        if (graphModel.getDestination() == null) {
-            if (!graphModel.getVertexs().isEmpty()) {
-                for (Vertex v : graphModel.getVertexs()) {
-                    if (v.getPlayer() == 1) {
-                        graphModel.setDestination(v);
-                        break;
-                    }
-                }
-            }
-            if (graphModel.getDestination() == null) {
-                addVertex(1);
-                graphModel.setDestination(graphModel.getLastVertex());
-            }
-        }
         displayGraph();
 
         getConnectionHandler().addListener(mxEvent.CONNECT, new mxIEventListener() {
@@ -86,24 +83,16 @@ public class GraphPanel extends mxGraphComponent {
                         }
                     }
                     if (cost != null) {
-                        edgeAdded = GraphPanel.this.graphModel.addEdge(srcIndex, targetIndex, cost);
+                       // edgeAdded = GraphPanel.this.graphModel.addEdge(srcIndex, targetIndex, cost);
                         edge.setValue("" + cost);
                     }
                 }
-                if (!edgeAdded) {
+               /* if (!edgeAdded) {
                     Object[] cells = {edge};
                     graph.removeCells(cells);
-                }
+                }*/
             }
         });
-    }
-
-    public GraphPanel(GraphObjectOriented graph) {
-        this(graph, true);
-    }
-
-    public GraphPanel() {
-        this(new GraphObjectOriented(), true);
     }
 
     public void setEditable(boolean editable) {
@@ -119,7 +108,8 @@ public class GraphPanel extends mxGraphComponent {
     }
 
     public void updateGraph(PathAlgorithm pathAlgorithm) {
-        graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "1", lastSelected);
+        displayGraph();
+       /* graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "1", lastSelected);
         if (pathAlgorithm.getLastSelected() != -1) {
             lastSelected[0] = getVertexView(pathAlgorithm.getLastSelected());
             graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "5", lastSelected);
@@ -155,7 +145,7 @@ public class GraphPanel extends mxGraphComponent {
             }
         }
         graph.getModel().endUpdate();
-        graph.repaint();
+        graph.repaint();*/
     }
 
     private void changeEdgeColor(int source, int destination, String color) {
@@ -176,60 +166,77 @@ public class GraphPanel extends mxGraphComponent {
         try {
             graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));
             graph.refresh();
-            int nbNodes = graphModel.getVertexs().size();
+            int nbNodes = model.getVertexCount();
             vertexsView.clear();
             for (int i = 0; i < nbNodes; i++) {
-                Vertex v = graphModel.getVertex(i);
-                addVertexView(v);
+                addVertexView(i);
             }
-            for (int i = 0; i < nbNodes; i++) {
-                Vertex v = graphModel.getVertex(i);
-                for (Edge e : v.getPred()) {
-                    String value = "" + e.getCost();
-                    graph.insertEdge(parent, null, value, getVertexView(e.getSource()), getVertexView(e.getTarget()), "labelBackgroundColor=white");
-
+            for(int u = 0; u < nbNodes ; u++){
+                int[] succ = model.getSuccessors(u);
+                int[] succW = model.getSuccessorsWeight(u);
+                for(int vIndex = 0; vIndex < succ.length; vIndex++){
+                    int v = succ[vIndex];
+                    String label = "" + succW[vIndex];
+                    graph.insertEdge(parent,null,label,getVertexView(u),getVertexView(v),"labelBackgroundColor=white");
+                    if(pathAlgorithm != null) {
+                        Color color = pathAlgorithm.getEdgeColor(u, v);
+                        if (color != null) {
+                            changeEdgeColor(u, v, colorToHex(color));
+                        }
+                    }
                 }
             }
-            if (autoLayout) {
+            //if (autoLayout) {
                 applyLayout();
-            }
+           // }
         } finally {
             graph.getModel().endUpdate();
         }
     }
 
     public void setAutoLayout(boolean autoLayout) {
-        this.autoLayout = autoLayout;
+        /*this.autoLayout = autoLayout;
         if (autoLayout) {
             applyLayout();
-        }
+        }*/
     }
 
     public final void addVertex(int player) {
-        graphModel.addVertex(player);
+        /*graphModel.addVertex(player);
         Vertex v = graphModel.getLastVertex();
-        addVertexView(v);
+        addVertexView(v);*/
     }
 
     private Object getVertexView(int vertexId) {
         return vertexsView.get(vertexId);
     }
 
-    private void addVertexView(Vertex v) {
+    private void addVertexView(int vertexId) {
         Object parent = graph.getDefaultParent();
-        int i = v.getIndex();
-        String label = "" + (i + 1);
-        if (displayDistance) {
-            label += "(inf)";
+        String label = "[" + (vertexId + 1) + "]";
+        if(pathAlgorithm != null) {
+            String algLabel = pathAlgorithm.getLabel(vertexId);
+            if (algLabel != null) {
+                label += " " + algLabel;
+            }
         }
-        if (v == graphModel.getDestination()) {
-            vertexsView.add(i, graph.insertVertex(parent, "" + i, label, 100, 100, 80, 30, DESTINATION_STYLE));
-        } else if (v.getPlayer() == 1) {
-            vertexsView.add(i, graph.insertVertex(parent, "" + i, label, 100, 100, 80, 30, P1_STYLE));
+        if (model.getPlayer(vertexId) == Graph.PLAYER1) {
+            vertexsView.add(vertexId, graph.insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P1_STYLE));
         } else {
-            vertexsView.add(i, graph.insertVertex(parent, "" + i, label, 100, 100, 80, 30, P2_STYLE));
+            vertexsView.add(vertexId, graph.insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P2_STYLE));
         }
-        ((mxCell) vertexsView.get(i)).setId("" + i);
+        ((mxCell) vertexsView.get(vertexId)).setId("" +vertexId);
+        if(pathAlgorithm != null) {
+            Color color = pathAlgorithm.getVertexColor(vertexId);
+            if (color != null) {
+                Object[] o = {vertexsView.get(vertexId)};
+                graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, colorToHex(color), o);
+            }
+        }
+    }
+
+    private static String colorToHex(Color color){
+        return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
     }
 
     public void applyLayout() {
@@ -249,7 +256,7 @@ public class GraphPanel extends mxGraphComponent {
     }
 
     public void deleteSelected() {
-        mxCell c = ((mxCell) graph.getSelectionCell());
+     /*   mxCell c = ((mxCell) graph.getSelectionCell());
         if (c != null) {
             if (c.isVertex()) {
                 int index = Integer.parseInt(c.getId());
@@ -268,10 +275,10 @@ public class GraphPanel extends mxGraphComponent {
                 Object[] cells = {c};
                 graph.removeCells(cells);
             }
-        }
+        }*/
     }
 
-    public GraphObjectOriented getGraphModel() {
-        return graphModel;
+    public Graph getGraphModel() {
+        return model;
     }
 }
