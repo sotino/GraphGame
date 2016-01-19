@@ -7,6 +7,7 @@ package be.ac.umons.olbregts.graphgame.model.implementation.objectoriented;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -156,6 +157,33 @@ public class GraphObjectOriented implements Graph {
     @Override
     public boolean hasPredecessors(int vertexId) {
         return !vertexs.get(vertexId).getPred().isEmpty();
+    }
+
+    @Override
+    public Graph getSubgraph(int[] vertexs) {
+        GraphObjectOriented subGraphe = new GraphObjectOriented();
+        for(int i = 0; i < getVertexCount(); i++){
+            subGraphe.addVertex(getPlayer(i));
+        }
+        for(Vertex v: this.vertexs){
+            if(contains(vertexs,v.getIndex())){
+                for(Edge e : v.getSucc()){
+                    if(contains(vertexs,e.getTarget().getIndex())){
+                        subGraphe.addEdge(v.getIndex(),e.getTarget().getIndex(),e.getCost());
+                    }
+                }
+            }
+        }
+        return subGraphe;
+    }
+
+    public boolean contains(int[] array, int v){
+        for(int a:array){
+            if(a == v){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

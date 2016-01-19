@@ -6,14 +6,10 @@ package be.ac.umons.olbregts.graphgame.view;
 
 import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmInfo;
 import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmesFactory;
-import be.ac.umons.olbregts.graphgame.algorithm.PathAlgorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.implementation.Attractor;
-import be.ac.umons.olbregts.graphgame.algorithm.implementation.DijkstraTP;
-import be.ac.umons.olbregts.graphgame.algorithm.implementation.ValueIteration;
+import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
-import be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel;
 import be.ac.umons.olbregts.graphgame.view.wining_condition.WinningPanel;
 
 import javax.swing.*;
@@ -32,7 +28,7 @@ public class AlgorithmScreen extends JPanel {
 
     private static final long serialVersionUID = -8123406571694511514L;
     private AlgorithmInfo[] availableAlgo;
-    private PathAlgorithm pathAlgorithm;
+    private Algorithm pathAlgorithm;
     private Graph graph;
     private Game game;
 

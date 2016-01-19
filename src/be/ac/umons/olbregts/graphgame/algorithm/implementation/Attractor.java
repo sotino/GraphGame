@@ -5,7 +5,7 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
-import be.ac.umons.olbregts.graphgame.algorithm.PathAlgorithm;
+import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
@@ -13,17 +13,17 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 /**
  * @author Simon
  */
-public class Attractor implements PathAlgorithm {
+public class Attractor implements Algorithm {
 
     private boolean[] attractor;
     private ReachibilityGame game;
     private int[] strat;
     private boolean ended;
+    private int winningPlayer = Graph.PLAYER1;
 
     @Override
     public void reset(Game game) throws IllegalGraphException {
@@ -40,6 +40,14 @@ public class Attractor implements PathAlgorithm {
         for (Integer index : this.game.getWiningCondition()) {
             attractor[index] = true;
         }
+    }
+
+    public void setWinningPlayer(int winningPlayer){
+        this.winningPlayer = winningPlayer;
+    }
+
+    public boolean isAttractor(int vertexId){
+        return attractor[vertexId];
     }
 
     @Override
@@ -60,7 +68,7 @@ public class Attractor implements PathAlgorithm {
         for (int vertexId = 0; vertexId < game.getGraph().getVertexCount(); vertexId++) {
             if (!attractor[vertexId]) {
                 int[] successor = game.getGraph().getSuccessors(vertexId);
-                if (game.getGraph().getPlayer(vertexId) == Graph.PLAYER1) {
+                if (game.getGraph().getPlayer(vertexId) == winningPlayer) {
                     for (int succId : successor) {
                         if (attractor[succId]) {
                             attractor[vertexId] = true;

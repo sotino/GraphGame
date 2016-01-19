@@ -14,15 +14,17 @@ public interface Graph {
 
     public int getVertexCount();
 
-    public int getSuccessorCount(int vertexId);
-
     public int getPlayer(int vertexId);
-
-    public int[] getSuccessors(int vertexId);
 
     public boolean hasSuccessors(int vertexId);
 
+    public int getSuccessorCount(int vertexId);
+
+    public int[] getSuccessors(int vertexId);
+
     public int[] getSuccessorsWeight(int vertexId);
+
+    public boolean hasPredecessors(int vertexId);
 
     public int getPredecessorCount(int vertexId);
 
@@ -30,13 +32,13 @@ public interface Graph {
 
     public int[] getPredecessorWeight(int vertexId);
 
-    public boolean hasPredecessors(int vertexId);
-
-    public boolean addEdge(int srcIndex, int targetIndex, int cost);
-
     public int addVertex(int player);
 
     public void deleteVertex(int vertexId);
 
+    public boolean addEdge(int srcIndex, int targetIndex, int cost);
+
     public void deleteEdge(int sourceId, int destId);
+
+    public Graph getSubgraph(int[] vertexs);
 }

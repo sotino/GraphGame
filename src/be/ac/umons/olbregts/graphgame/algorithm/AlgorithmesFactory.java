@@ -44,10 +44,10 @@ public class AlgorithmesFactory {
                 }
                 String name = values[0];
                 Object alg = Class.forName(values[1]).newInstance();
-                if(! (alg instanceof PathAlgorithm)){
+                if(! (alg instanceof Algorithm)){
                     System.err.println("error");
                 }
-                PathAlgorithm algorithm = (PathAlgorithm) alg;
+                Algorithm algorithm = (Algorithm) alg;
                 Object wp = Class.forName(values[2]).newInstance();
                 if(! (wp instanceof WinningPanel)){
                     System.err.println("error");

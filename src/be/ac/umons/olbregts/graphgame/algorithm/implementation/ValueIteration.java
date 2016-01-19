@@ -5,7 +5,7 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.EscapeStrategy;
-import be.ac.umons.olbregts.graphgame.algorithm.PathAlgorithm;
+import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 /**
  * @author Simon
  */
-public class ValueIteration implements PathAlgorithm {
+public class ValueIteration implements Algorithm {
 
     private ArrayList<Integer> vertexValues;
     private int[] mainStrat;

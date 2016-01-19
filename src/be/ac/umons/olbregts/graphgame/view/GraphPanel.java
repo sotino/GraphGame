@@ -4,12 +4,9 @@
  */
 package be.ac.umons.olbregts.graphgame.view;
 
-import be.ac.umons.olbregts.graphgame.algorithm.PathAlgorithm;
-import be.ac.umons.olbregts.graphgame.model.Game;
+import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.model.Graph;
-import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.Edge;
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
-import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.Vertex;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
 import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.model.mxCell;
@@ -34,7 +31,7 @@ public class GraphPanel extends mxGraphComponent {
     private static final String P2_STYLE = "defaultVertex";
     private ArrayList<Object> vertexsView;
     private Graph model;
-    private PathAlgorithm pathAlgorithm;
+    private Algorithm pathAlgorithm;
 
     public GraphPanel() {
         this(new GraphObjectOriented());
@@ -44,7 +41,7 @@ public class GraphPanel extends mxGraphComponent {
         this(model, null);
     }
 
-    public GraphPanel(Graph model, PathAlgorithm pathAlgorithm) {
+    public GraphPanel(Graph model, Algorithm pathAlgorithm) {
         super(new mxGraph());
         this.model = model;
         this.pathAlgorithm = pathAlgorithm;
@@ -101,7 +98,7 @@ public class GraphPanel extends mxGraphComponent {
         displayGraph();
     }
 
-    public void updateGraph(PathAlgorithm pathAlgorithm) {
+    public void updateGraph(Algorithm pathAlgorithm) {
         displayGraph();
        /**
          graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "1", lastSelected);
@@ -262,7 +259,7 @@ public class GraphPanel extends mxGraphComponent {
         return model;
     }
 
-    public void setAlgorithm(PathAlgorithm algorithm){
+    public void setAlgorithm(Algorithm algorithm){
         pathAlgorithm = algorithm;
         updateGraph(algorithm);
     }

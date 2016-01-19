@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * @author Simon
  */
-public interface PathAlgorithm {
+public interface Algorithm {
 
     public void reset(Game game) throws IllegalGraphException;
 

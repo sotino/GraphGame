@@ -8,10 +8,10 @@ import be.ac.umons.olbregts.graphgame.view.wining_condition.WinningPanel;
 public class AlgorithmInfo {
 
     private String name;
-    private PathAlgorithm algorithm;
+    private Algorithm algorithm;
     private WinningPanel winningPanel;
 
-    public AlgorithmInfo(String name, PathAlgorithm algorithm, WinningPanel winningPanel) {
+    public AlgorithmInfo(String name, Algorithm algorithm, WinningPanel winningPanel) {
         this.name = name;
         this.algorithm = algorithm;
         this.winningPanel = winningPanel;
@@ -21,7 +21,7 @@ public class AlgorithmInfo {
         return name;
     }
 
-    public PathAlgorithm getAlgorithm() {
+    public Algorithm getAlgorithm() {
         return algorithm;
     }
 
