@@ -30,7 +30,7 @@ public class Attractor implements PathAlgorithm {
         if (!(game instanceof ReachibilityGame)) {
             throw new IllegalGraphException("The objectif does not match. A ReachibilityGame is needed");
         }
-        this.game = (ReachibilityGame) game.getGraph();
+        this.game = (ReachibilityGame) game;
         attractor = new boolean[game.getGraph().getVertexCount()];
         strat = new int[attractor.length];
         for (int i = 0; i < strat.length; i++) {

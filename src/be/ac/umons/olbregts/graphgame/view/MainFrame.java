@@ -4,7 +4,7 @@
  */
 package be.ac.umons.olbregts.graphgame.view;
 
-import be.ac.umons.olbregts.graphgame.io.FileLoader;
+import be.ac.umons.olbregts.graphgame.io.GraphLoader;
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
 
 import javax.swing.*;
@@ -96,7 +96,7 @@ public class MainFrame extends javax.swing.JFrame {
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 String fileName = fc.getSelectedFile().getAbsolutePath();
-                GraphObjectOriented graph = FileLoader.loadGraph(fileName);
+                GraphObjectOriented graph = GraphLoader.loadGraph(fileName);
                 loadGraph(graph);
             }
         } catch (FileNotFoundException ex) {
@@ -121,7 +121,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     protected void loadGraph(GraphObjectOriented graphModel) {
         getContentPane().removeAll();
-        getContentPane().add(new GraphView(graphModel), BorderLayout.CENTER);
+        getContentPane().add(new AlgorithmScreen(graphModel), BorderLayout.CENTER);
         pack();
     }
 }

@@ -4,7 +4,8 @@
  */
 package be.ac.umons.olbregts.graphgame.view;
 
-import be.ac.umons.olbregts.graphgame.io.FileLoader;
+import be.ac.umons.olbregts.graphgame.io.GraphLoader;
+import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
 
 import javax.swing.*;
@@ -33,10 +34,10 @@ public class EditorPane extends JPanel {
     public EditorPane(MainFrame mainFrame, String fileName) throws FileNotFoundException {
         this.mainFrame = mainFrame;
         this.fileName = fileName;
-        init(FileLoader.loadGraph(fileName));
+        init(GraphLoader.loadGraph(fileName));
     }
 
-    private void init(GraphObjectOriented graph) {
+    private void init(Graph graph) {
         setLayout(new BorderLayout());
         JPanel menu = new JPanel();
         add(menu, BorderLayout.WEST);
@@ -109,7 +110,7 @@ public class EditorPane extends JPanel {
                 }
                 if (fileName != null) {
                     try {
-                        FileLoader.saveGraph((GraphObjectOriented) graphPanel.getGraphModel(), fileName);
+                        GraphLoader.saveGraph((GraphObjectOriented) graphPanel.getGraphModel(), fileName);
                     } catch (UnsupportedEncodingException ex) {
                         Logger.getLogger(EditorPane.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (FileNotFoundException ex) {
@@ -135,7 +136,6 @@ public class EditorPane extends JPanel {
             graph = new GraphObjectOriented();
         }
         graphPanel = new GraphPanel(graph);
-        graphPanel.setAutoLayout(false);
         graphPanel.setEditable(true);
         add(BorderLayout.CENTER, graphPanel);
         setVisible(true);

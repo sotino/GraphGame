@@ -1,0 +1,4 @@
+Name;Algorithm;WinningPanel
+Attractor;be.ac.umons.olbregts.graphgame.algorithm.implementation.Attractor;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
+Dijkstra TP;be.ac.umons.olbregts.graphgame.algorithm.implementation.DijkstraTP;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
+Value Iteration;be.ac.umons.olbregts.graphgame.algorithm.implementation.ValueIteration;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel

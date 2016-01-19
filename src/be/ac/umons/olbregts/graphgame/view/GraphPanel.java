@@ -30,17 +30,11 @@ import java.util.ArrayList;
  */
 public class GraphPanel extends mxGraphComponent {
 
-    //private static final String DESTINATION_STYLE = "shape=ellipse;fillColor=yellow";
     private static final String P1_STYLE = "shape=ellipse";
     private static final String P2_STYLE = "defaultVertex";
     private ArrayList<Object> vertexsView;
     private Graph model;
     private PathAlgorithm pathAlgorithm;
-    //private GraphObjectOriented graphModel;
-    //private Object[] lastSelected;
-    //private boolean displayDistance;
-    //private boolean autoLayout;
-
 
     public GraphPanel() {
         this(new GraphObjectOriented());
@@ -83,14 +77,14 @@ public class GraphPanel extends mxGraphComponent {
                         }
                     }
                     if (cost != null) {
-                       // edgeAdded = GraphPanel.this.graphModel.addEdge(srcIndex, targetIndex, cost);
+                        edgeAdded = GraphPanel.this.model.addEdge(srcIndex, targetIndex, cost);
                         edge.setValue("" + cost);
                     }
                 }
-               /* if (!edgeAdded) {
+                if (!edgeAdded) {
                     Object[] cells = {edge};
                     graph.removeCells(cells);
-                }*/
+                }
             }
         });
     }
@@ -109,7 +103,8 @@ public class GraphPanel extends mxGraphComponent {
 
     public void updateGraph(PathAlgorithm pathAlgorithm) {
         displayGraph();
-       /* graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "1", lastSelected);
+       /**
+         graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "1", lastSelected);
         if (pathAlgorithm.getLastSelected() != -1) {
             lastSelected[0] = getVertexView(pathAlgorithm.getLastSelected());
             graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "5", lastSelected);
@@ -186,25 +181,15 @@ public class GraphPanel extends mxGraphComponent {
                     }
                 }
             }
-            //if (autoLayout) {
-                applyLayout();
-           // }
+            applyLayout();
         } finally {
             graph.getModel().endUpdate();
         }
     }
 
-    public void setAutoLayout(boolean autoLayout) {
-        /*this.autoLayout = autoLayout;
-        if (autoLayout) {
-            applyLayout();
-        }*/
-    }
-
     public final void addVertex(int player) {
-        /*graphModel.addVertex(player);
-        Vertex v = graphModel.getLastVertex();
-        addVertexView(v);*/
+        int vertexId = model.addVertex(player);
+        addVertexView(vertexId);
     }
 
     private Object getVertexView(int vertexId) {
@@ -256,29 +241,29 @@ public class GraphPanel extends mxGraphComponent {
     }
 
     public void deleteSelected() {
-     /*   mxCell c = ((mxCell) graph.getSelectionCell());
+        mxCell c = ((mxCell) graph.getSelectionCell());
         if (c != null) {
             if (c.isVertex()) {
-                int index = Integer.parseInt(c.getId());
-                if (graphModel.getDestination() == graphModel.getVertex(index)) {
-                    JOptionPane.showMessageDialog(this, "You can't delete the destination vertex");
-                } else {
-                    graphModel.deleteVertex(index);
+                int vertexId = Integer.parseInt(c.getId());
+                    model.deleteVertex(vertexId);
                     Object[] cells = {c};
                     graph.removeCells(cells);
-
-                }
             } else if (c.isEdge()) {
-                int srcIndex = Integer.parseInt(c.getSource().getId());
-                int targetIndex = Integer.parseInt(c.getTarget().getId());
-                graphModel.deleteEdge(srcIndex, targetIndex);
+                int sourceId = Integer.parseInt(c.getSource().getId());
+                int destId = Integer.parseInt(c.getTarget().getId());
+                model.deleteEdge(sourceId, destId);
                 Object[] cells = {c};
                 graph.removeCells(cells);
             }
-        }*/
+        }
     }
 
     public Graph getGraphModel() {
         return model;
+    }
+
+    public void setAlgorithm(PathAlgorithm algorithm){
+        pathAlgorithm = algorithm;
+        updateGraph(algorithm);
     }
 }

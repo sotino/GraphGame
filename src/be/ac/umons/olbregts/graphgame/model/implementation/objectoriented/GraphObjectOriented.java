@@ -15,11 +15,9 @@ import java.util.List;
 public class GraphObjectOriented implements Graph {
 
     private ArrayList<Vertex> vertexs;
-    private Vertex destination;
 
     public GraphObjectOriented() {
         vertexs = new ArrayList<>();
-        destination = null;
     }
 
     public GraphObjectOriented(List<Integer> head, List<Integer> player, List<Integer> succ, List<Integer> cost) {
@@ -27,9 +25,6 @@ public class GraphObjectOriented implements Graph {
         for (int i = 0; i < head.size() - 1; i++) {
             int p = player.get(i) == 0 ? 1 : player.get(i);
             Vertex v = new Vertex(i, p);
-            if (player.get(i) == 0) {
-                destination = v;
-            }
             vertexs.add(v);
         }
         for (int i = 0; i < head.size() - 1; i++) {
@@ -45,36 +40,14 @@ public class GraphObjectOriented implements Graph {
         return vertexs;
     }
 
-    public Vertex getDestination() {
-        return destination;
-    }
-
-    public void setDestination(Vertex v) {
-        if (vertexs.contains(v)) {
-            destination = v;
-        } else {
-            throw new IllegalArgumentException("The vertex must be in the graph");
-        }
-    }
-
-    public Vertex getVertex(int i) {
-        return vertexs.get(i);
-    }
-
-    public Vertex getLastVertex() {
-        return vertexs.get(vertexs.size() - 1);
-    }
-
-    public void addVertex(int player) {
+    public int addVertex(int player) {
         Vertex v = new Vertex(vertexs.size(), player);
         vertexs.add(v);
+        return v.getIndex();
     }
 
     public void deleteVertex(int index) {
         Vertex old = vertexs.get(index);
-        if (old == destination) {
-            destination = null;
-        }
         vertexs.remove(old);
         for (int i = 0; i < vertexs.size(); i++) {
             vertexs.get(i).setIndex(i);
@@ -109,10 +82,6 @@ public class GraphObjectOriented implements Graph {
         Edge e = new Edge(src, target, cost);
         src.addSucc(e);
         return target.addPred(e);
-    }
-
-    public int getVertexNumber() {
-        return vertexs.size();
     }
 
     @Override
@@ -188,6 +157,5 @@ public class GraphObjectOriented implements Graph {
     public boolean hasPredecessors(int vertexId) {
         return !vertexs.get(vertexId).getPred().isEmpty();
     }
-
 
 }

@@ -34,7 +34,7 @@ public class ValueIteration implements PathAlgorithm {
         if (!(game instanceof ReachibilityGame)) {
             throw new IllegalGraphException("The objectif does not match. A ReachibilityGame is needed");
         }
-        this.game = (ReachibilityGame) game.getGraph();
+        this.game = (ReachibilityGame) game;
 
         targets = this.game.getWiningCondition().toArray(new Integer[0]);
         int vertexCount = game.getGraph().getVertexCount();

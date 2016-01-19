@@ -20,7 +20,7 @@ import java.util.Scanner;
 /**
  * @author Simon
  */
-public class FileLoader {
+public class GraphLoader {
 
     public static GraphObjectOriented loadGraph(String filePath) throws FileNotFoundException {
 
@@ -93,11 +93,7 @@ public class FileLoader {
 
         //Player
         for (Vertex v : graph.getVertexs()) {
-            if (v == graph.getDestination()) {
-                writer.print("0 ");
-            } else {
                 writer.print("" + v.getPlayer() + " ");
-            }
         }
         writer.println();
 

@@ -4,56 +4,70 @@
  */
 package be.ac.umons.olbregts.graphgame.view;
 
+import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmInfo;
+import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmesFactory;
 import be.ac.umons.olbregts.graphgame.algorithm.PathAlgorithm;
 import be.ac.umons.olbregts.graphgame.algorithm.implementation.Attractor;
 import be.ac.umons.olbregts.graphgame.algorithm.implementation.DijkstraTP;
 import be.ac.umons.olbregts.graphgame.algorithm.implementation.ValueIteration;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
-import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
+import be.ac.umons.olbregts.graphgame.model.Game;
+import be.ac.umons.olbregts.graphgame.model.Graph;
+import be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel;
+import be.ac.umons.olbregts.graphgame.view.wining_condition.WinningPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Permet d'afficher un graphe
  *
  * @author Simon
  */
-public class GraphView extends JPanel {
+public class AlgorithmScreen extends JPanel {
 
     private static final long serialVersionUID = -8123406571694511514L;
-    private AlgoSelectionItem[] availableAlgo;
+    private AlgorithmInfo[] availableAlgo;
+    private PathAlgorithm pathAlgorithm;
+    private Graph graph;
+    private Game game;
+
+    private JPanel algorithmSelection;
+    private JComboBox<AlgorithmInfo> algoSelector;
     private JButton applyAlgo;
+
+    private JPanel commandPanel;
+    private JSlider secondSlider;
+    private Timer autoStepTimer;
+    private boolean autoStepStarted;
     private JButton startAutoStep;
     private JButton step;
     private JButton compute;
     private JButton reload;
     private JButton changeAlgo;
-    private JComboBox<AlgoSelectionItem> algoSelector;
-    private JSlider secondSlider;
-    private JPanel commandPanel;
-    private JPanel algorithmSelection;
-    private GraphObjectOriented graph;
-    private GraphPanel graphPanel;
-    private PathAlgorithm pathAlgorithm;
-    private ResultRenderer renderer;
-    private boolean autoStepStarted;
-    private Timer autoStepTimer;
 
-    public GraphView(GraphObjectOriented graph) {
+    private JPanel winning;
+    private JButton validWinning;
+
+    private GraphPanel graphPanel;
+
+    public AlgorithmScreen(Graph graph) {
         this.graph = graph;
         autoStepStarted = false;
-        initAlgorithmList();
+        availableAlgo = AlgorithmesFactory.getAvailableAlgorithm().toArray(new AlgorithmInfo[0]);
         initUI();
         initButtonAction();
     }
 
     private void initUI() {
         setLayout(new BorderLayout());
+
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
 
         algorithmSelection = new JPanel();
         algorithmSelection.setLayout(new BoxLayout(algorithmSelection, BoxLayout.X_AXIS));
@@ -62,8 +76,14 @@ public class GraphView extends JPanel {
         algorithmSelection.add(algoSelector);
         applyAlgo = new JButton("Apply");
         algorithmSelection.add(applyAlgo);
-        add(BorderLayout.NORTH, algorithmSelection);
+        northPanel.add(algorithmSelection);
 
+        winning = new JPanel(new BorderLayout());
+        validWinning = new JButton("Ok");
+        winning.add(validWinning, BorderLayout.EAST);
+        winning.setVisible(false);
+        northPanel.add(winning);
+        add(northPanel, BorderLayout.NORTH);
 
         commandPanel = new JPanel();
         commandPanel.setLayout(new BoxLayout(commandPanel, BoxLayout.Y_AXIS));
@@ -117,16 +137,31 @@ public class GraphView extends JPanel {
         applyAlgo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-             //   try {
-                    AlgoSelectionItem selected = (AlgoSelectionItem) algoSelector.getSelectedItem();
-                    pathAlgorithm = selected.algo;
-                    renderer = selected.renderer;
-                   // pathAlgorithm.reset(graph);
+                AlgorithmInfo selected = (AlgorithmInfo) algoSelector.getSelectedItem();
+                enableComponents(algorithmSelection, false);
+                WinningPanel winningPanel = selected.getWinningPanel();
+                winningPanel.setGraph(graph);
+                winning.add(winningPanel, BorderLayout.CENTER);
+                winning.setVisible(true);
+            }
+        });
+
+        validWinning.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AlgorithmInfo selected = (AlgorithmInfo) algoSelector.getSelectedItem();
+                if (selected.getWinningPanel().canExtractGame()) {
+                    game = selected.getWinningPanel().getGame();
+                    pathAlgorithm = selected.getAlgorithm();
+                    try {
+                        pathAlgorithm.reset(game);
+                    } catch (IllegalGraphException e1) {
+                        e1.printStackTrace();
+                    }
+                    graphPanel.setAlgorithm(pathAlgorithm);
+                    winning.setVisible(false);
                     enableComponents(commandPanel, true);
-                    enableComponents(algorithmSelection, false);
-              /*  } catch (IllegalGraphException ex) {
-                    JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
-                }*/
+                }
             }
         });
 
@@ -145,7 +180,7 @@ public class GraphView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 pathAlgorithm.computeAStep();
-                renderer.render();
+                updateGraph();
                 if (pathAlgorithm.isEnded()) {
                     enableComponents(commandPanel, false);
                     reload.setEnabled(true);
@@ -158,7 +193,7 @@ public class GraphView extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 pathAlgorithm.compute();
-                renderer.render();
+                updateGraph();
                 enableComponents(commandPanel, false);
                 reload.setEnabled(true);
                 changeAlgo.setEnabled(true);
@@ -168,30 +203,44 @@ public class GraphView extends JPanel {
         reload.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-             //   try {
-                   // pathAlgorithm.reset(graph);
-                    renderer.reset();
+                try {
+                    pathAlgorithm.reset(game);
+                    resetGraph();
                     enableComponents(commandPanel, true);
-           //     } catch (IllegalGraphException ex) {
-             //       JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
-               // }
+                } catch (IllegalGraphException e1) {
+                    e1.printStackTrace();
+                }
+                //   try {
+                // pathAlgorithm.reset(graph);
+                //renderer.reset();
+                //enableComponents(commandPanel, true);
+                //     } catch (IllegalGraphException ex) {
+                //       JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
+                // }
             }
         });
 
         changeAlgo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-             //   try {
-               //     pathAlgorithm.reset(graph);
-                    renderer.reset();
+                try {
+                    pathAlgorithm.reset(game);
+                    updateGraph();
                     enableComponents(commandPanel, true);
-               // } catch (IllegalGraphException ex) {
-                 //   JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
-               // }
-                GraphView.this.graphPanel.resetView();
+                    resetGraph();
+                    graphPanel.resetView();
+                    enableComponents(commandPanel, false);
+                    enableComponents(algorithmSelection, true);
+                } catch (IllegalGraphException e1) {
+                    e1.printStackTrace();
+                }
+                //   try {
+                //     pathAlgorithm.reset(graph);
+                //renderer.reset();
+                // } catch (IllegalGraphException ex) {
+                //   JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
+                // }
 
-                enableComponents(commandPanel, false);
-                enableComponents(algorithmSelection, true);
             }
         });
 
@@ -228,16 +277,7 @@ public class GraphView extends JPanel {
     }
 
     public void resetGraph() {
-        GraphView.this.graphPanel.resetView();
-    }
-
-    private void initAlgorithmList() {
-        availableAlgo = new AlgoSelectionItem[3];
-        availableAlgo[0] = new AlgoSelectionItem("DijkstraTp", new DijkstraTP(), new MemoryLessRenderer(this));
-        ValueIteration valueIteration = new ValueIteration();
-        availableAlgo[1] = new AlgoSelectionItem("Value iteration", valueIteration, new ValueIterationRenderer(this, graph, valueIteration));
-        availableAlgo[2] = new AlgoSelectionItem("Attractor", new Attractor(), new MemoryLessRenderer(this));
-
+        graphPanel.resetView();
     }
 
     private void startAutoStart() {
@@ -255,7 +295,7 @@ public class GraphView extends JPanel {
             public void run() {
                 if (!pathAlgorithm.isEnded()) {
                     pathAlgorithm.computeAStep();
-                    renderer.render();
+                    updateGraph();
                 } else {
                     stopAutoStart();
                 }
@@ -276,24 +316,6 @@ public class GraphView extends JPanel {
             changeAlgo.setEnabled(true);
         } else {
             enableComponents(commandPanel, true);
-        }
-    }
-
-    private class AlgoSelectionItem {
-
-        private String label;
-        private PathAlgorithm algo;
-        private ResultRenderer renderer;
-
-        public AlgoSelectionItem(String label, PathAlgorithm algo, ResultRenderer renderer) {
-            this.label = label;
-            this.algo = algo;
-            this.renderer = renderer;
-        }
-
-        @Override
-        public String toString() {
-            return label;
         }
     }
 }

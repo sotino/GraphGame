@@ -44,7 +44,7 @@ public class DijkstraTP implements PathAlgorithm {
         if (!isValid(game)) {
             throw new IllegalGraphException("The cost on edge can't be negative");
         }
-        this.game = (ReachibilityGame) game.getGraph();
+        this.game = (ReachibilityGame) game;
         this.targets = this.game.getWiningCondition().toArray(new Integer[0]);
         lastSelected = -1;
         initializeTP();
@@ -119,8 +119,8 @@ public class DijkstraTP implements PathAlgorithm {
 
     @Override
     public Color getVertexColor(int vertexId) {
-        if(vertexId == lastSelected)
-            return Color.BLUE;
+        if(vertexId == lastSelected && ! isEnded())
+            return Color.CYAN;
         for(int target : game.getWiningCondition()){
             if(vertexId == target){
                 return Color.YELLOW;

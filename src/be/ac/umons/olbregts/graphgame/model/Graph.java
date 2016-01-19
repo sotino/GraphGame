@@ -31,4 +31,12 @@ public interface Graph {
     public int[] getPredecessorWeight(int vertexId);
 
     public boolean hasPredecessors(int vertexId);
+
+    public boolean addEdge(int srcIndex, int targetIndex, int cost);
+
+    public int addVertex(int player);
+
+    public void deleteVertex(int vertexId);
+
+    public void deleteEdge(int sourceId, int destId);
 }
