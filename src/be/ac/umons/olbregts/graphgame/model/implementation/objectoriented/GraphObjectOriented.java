@@ -162,14 +162,14 @@ public class GraphObjectOriented implements Graph {
     @Override
     public Graph getSubgraph(int[] vertexs) {
         GraphObjectOriented subGraphe = new GraphObjectOriented();
-        for(int i = 0; i < getVertexCount(); i++){
+        for (int i = 0; i < getVertexCount(); i++) {
             subGraphe.addVertex(getPlayer(i));
         }
-        for(Vertex v: this.vertexs){
-            if(contains(vertexs,v.getIndex())){
-                for(Edge e : v.getSucc()){
-                    if(contains(vertexs,e.getTarget().getIndex())){
-                        subGraphe.addEdge(v.getIndex(),e.getTarget().getIndex(),e.getCost());
+        for (Vertex v : this.vertexs) {
+            if (contains(vertexs, v.getIndex())) {
+                for (Edge e : v.getSucc()) {
+                    if (contains(vertexs, e.getTarget().getIndex())) {
+                        subGraphe.addEdge(v.getIndex(), e.getTarget().getIndex(), e.getCost());
                     }
                 }
             }
@@ -177,13 +177,26 @@ public class GraphObjectOriented implements Graph {
         return subGraphe;
     }
 
-    public boolean contains(int[] array, int v){
-        for(int a:array){
-            if(a == v){
+    public boolean contains(int[] array, int v) {
+        for (int a : array) {
+            if (a == v) {
                 return true;
             }
         }
         return false;
+    }
+
+    public Graph clone() {
+        GraphObjectOriented clone = new GraphObjectOriented();
+        for (int i = 0; i < getVertexCount(); i++) {
+            clone.addVertex(getPlayer(i));
+        }
+        for (Vertex v : this.vertexs) {
+            for (Edge e : v.getSucc()) {
+                clone.addEdge(v.getIndex(), e.getTarget().getIndex(), e.getCost());
+            }
+        }
+        return clone;
     }
 
 }

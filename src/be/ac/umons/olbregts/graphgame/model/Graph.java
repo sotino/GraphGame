@@ -41,4 +41,6 @@ public interface Graph {
     public void deleteEdge(int sourceId, int destId);
 
     public Graph getSubgraph(int[] vertexs);
+
+    public Graph clone();
 }

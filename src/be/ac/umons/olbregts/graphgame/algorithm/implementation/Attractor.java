@@ -95,25 +95,32 @@ public class Attractor implements Algorithm {
                 }
             }
         }
-    }
-
-    @Override
-    public Strategy getStrategy(int vertesId) {
-        int selected = -1;
-        if (attractor[vertesId]) {
-            selected = strat[vertesId];
-        } else {
-            if (ended) {
-                int[] successor = game.getGraph().getSuccessors(vertesId);
-                for (int succId : successor) {
-                    if (!attractor[succId]) {
-                        selected = succId;
-                        break;
+        if(ended){
+            for(int i = 0;i<game.getGraph().getVertexCount(); i ++){
+                if(strat[i] < 0){
+                    if(attractor[i]){
+                        for(int succId:game.getGraph().getSuccessors(i)){
+                            if(attractor[succId]){
+                                strat[i] = succId;
+                                break;
+                            }
+                        }
+                    }else{
+                        for(int succId:game.getGraph().getSuccessors(i)){
+                            if(!attractor[succId]){
+                                strat[i] = succId;
+                                break;
+                            }
+                        }
                     }
                 }
             }
         }
-        return new MemoryLessStrategy(selected);
+    }
+
+    @Override
+    public Strategy getStrategy(int vertesId) {
+        return new MemoryLessStrategy(strat[vertesId]);
     }
 
     @Override
