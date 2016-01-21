@@ -28,7 +28,7 @@ public class AlgorithmScreen extends JPanel {
 
     private static final long serialVersionUID = -8123406571694511514L;
     private AlgorithmInfo[] availableAlgo;
-    private Algorithm pathAlgorithm;
+    private Algorithm algorithm;
     private Graph graph;
     private Game game;
 
@@ -148,13 +148,13 @@ public class AlgorithmScreen extends JPanel {
                 AlgorithmInfo selected = (AlgorithmInfo) algoSelector.getSelectedItem();
                 if (selected.getWinningPanel().canExtractGame()) {
                     game = selected.getWinningPanel().getGame();
-                    pathAlgorithm = selected.getAlgorithm();
+                    algorithm = selected.getAlgorithm();
                     try {
-                        pathAlgorithm.reset(game);
+                        algorithm.reset(game);
                     } catch (IllegalGraphException e1) {
                         e1.printStackTrace();
                     }
-                    graphPanel.setAlgorithm(pathAlgorithm);
+                    graphPanel.setAlgorithm(algorithm);
                     winning.setVisible(false);
                     enableComponents(commandPanel, true);
                 }
@@ -175,9 +175,10 @@ public class AlgorithmScreen extends JPanel {
         step.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pathAlgorithm.computeAStep();
+                algorithm.computeAStep();
                 updateGraph();
-                if (pathAlgorithm.isEnded()) {
+                if (algorithm.isEnded()) {
+                    System.out.println("eeeeee");
                     enableComponents(commandPanel, false);
                     reload.setEnabled(true);
                     changeAlgo.setEnabled(true);
@@ -188,7 +189,7 @@ public class AlgorithmScreen extends JPanel {
         compute.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pathAlgorithm.compute();
+                algorithm.compute();
                 updateGraph();
                 enableComponents(commandPanel, false);
                 reload.setEnabled(true);
@@ -200,14 +201,14 @@ public class AlgorithmScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    pathAlgorithm.reset(game);
+                    algorithm.reset(game);
                     resetGraph();
                     enableComponents(commandPanel, true);
                 } catch (IllegalGraphException e1) {
                     e1.printStackTrace();
                 }
                 //   try {
-                // pathAlgorithm.reset(graph);
+                // algorithm.reset(graph);
                 //renderer.reset();
                 //enableComponents(commandPanel, true);
                 //     } catch (IllegalGraphException ex) {
@@ -220,7 +221,7 @@ public class AlgorithmScreen extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    pathAlgorithm.reset(game);
+                    algorithm.reset(game);
                     updateGraph();
                     enableComponents(commandPanel, true);
                     resetGraph();
@@ -231,7 +232,7 @@ public class AlgorithmScreen extends JPanel {
                     e1.printStackTrace();
                 }
                 //   try {
-                //     pathAlgorithm.reset(graph);
+                //     algorithm.reset(graph);
                 //renderer.reset();
                 // } catch (IllegalGraphException ex) {
                 //   JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
@@ -269,7 +270,7 @@ public class AlgorithmScreen extends JPanel {
     }
 
     public void updateGraph() {
-        graphPanel.updateGraph(pathAlgorithm);
+        graphPanel.updateGraph(algorithm);
     }
 
     public void resetGraph() {
@@ -289,8 +290,8 @@ public class AlgorithmScreen extends JPanel {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                if (!pathAlgorithm.isEnded()) {
-                    pathAlgorithm.computeAStep();
+                if (!algorithm.isEnded()) {
+                    algorithm.computeAStep();
                     updateGraph();
                 } else {
                     stopAutoStart();
@@ -306,7 +307,7 @@ public class AlgorithmScreen extends JPanel {
         startAutoStep.setText("Start");
         autoStepTimer.cancel();
         autoStepTimer = null;
-        if (pathAlgorithm.isEnded()) {
+        if (algorithm.isEnded()) {
             startAutoStep.setEnabled(false);
             reload.setEnabled(true);
             changeAlgo.setEnabled(true);

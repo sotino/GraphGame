@@ -22,6 +22,7 @@ public class Buchi implements Algorithm {
     private boolean ended;
     private int[] strat;
     private boolean[] deleted;
+    private int winningPlayer = Graph.PLAYER1;
 
     @Override
     public void reset(Game game) throws IllegalGraphException {
@@ -39,9 +40,13 @@ public class Buchi implements Algorithm {
         ended = false;
     }
 
+    public void setWinningPlayer(int winningPlayer){
+        this.winningPlayer = winningPlayer;
+    }
+
     @Override
     public boolean isEnded() {
-        return false;
+        return ended;
     }
 
     @Override
@@ -58,31 +63,29 @@ public class Buchi implements Algorithm {
         try {
             ReachibilityGame attrGame = new ReachibilityGame(g, game.getWiningCondition());
             attr.reset(attrGame);
+            attr.setWinningPlayer(winningPlayer);
             attr.compute();
             List<Integer> trapTargets = new ArrayList<>();
             for (int i = 0; i < g.getVertexCount(); i++) {
-                if (!attr.isAttractor(i)) {
+                if (!attr.isInWinningRegion(i)) {
                     trapTargets.add(i);
-                    System.out.println("trap target:" + i);
                 }
             }
             ReachibilityGame trapGame = new ReachibilityGame(g, trapTargets);
             Attractor trap = new Attractor();
             trap.reset(trapGame);
-            trap.setWinningPlayer(Graph.PLAYER2);
+            trap.setWinningPlayer((winningPlayer == Graph.PLAYER1?Graph.PLAYER2:Graph.PLAYER1));
             trap.compute();
             for (int i = 0; i < g.getVertexCount(); i++) {
-                if (trap.isAttractor(i) && !deleted[i]) {
+                if (trap.isInWinningRegion(i) && !deleted[i]) {
                     ended = false;
                     deleted[i] = true;
                     int[] trapStrat = trap.getStrategy(i).getSelectedEdge();
                     if (trapStrat.length > 0) {
                         strat[i] = trapStrat[0];
                         if(game.getWiningCondition().contains(strat[i])){
-                            System.out.println("strat is win");
                             for(int succId:g.getSuccessors(i)){
-                                if(trap.isAttractor(succId) && ! game.getWiningCondition().contains(succId)){
-                                    System.out.println("new start : "+succId);
+                                if(trap.isInWinningRegion(succId) && ! game.getWiningCondition().contains(succId)){
                                     strat[i]=succId;
                                     break;
                                 }
@@ -114,6 +117,11 @@ public class Buchi implements Algorithm {
     @Override
     public Strategy getStrategy(int index) {
         return new MemoryLessStrategy(strat[index]);
+    }
+
+    @Override
+    public boolean isInWinningRegion(int vertexId){
+        return !deleted[vertexId];
     }
 
     @Override

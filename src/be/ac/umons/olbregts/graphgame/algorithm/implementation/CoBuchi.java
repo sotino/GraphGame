@@ -8,15 +8,13 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Created by Simon on 19-01-16.
+ * Created by Simon on 21-01-16.
  */
-public class Safety implements Algorithm {
+public class CoBuchi implements Algorithm {
 
-    private Attractor attractor;
+    private Buchi buchi;
     private ReachibilityGame game;
 
     @Override
@@ -25,42 +23,42 @@ public class Safety implements Algorithm {
             throw new IllegalGraphException("The objectif does not match. A ReachibilityGame is needed");
         }
         this.game = (ReachibilityGame) game;
-        attractor = new Attractor();
-        attractor.setWinningPlayer(Graph.PLAYER2);
-        attractor.reset(game);
+        buchi = new Buchi();
+        buchi.setWinningPlayer(Graph.PLAYER2);
+        buchi.reset(game);
     }
 
     @Override
     public boolean isEnded() {
-        return attractor.isEnded();
+        return buchi.isEnded();
     }
 
     @Override
     public void compute() {
-        attractor.compute();
+        buchi.compute();
     }
 
     @Override
     public void computeAStep() {
-        attractor.computeAStep();
+        buchi.computeAStep();
     }
 
     @Override
     public Strategy getStrategy(int index) {
-        return attractor.getStrategy(index);
+        return buchi.getStrategy(index);
     }
 
     @Override
     public boolean isInWinningRegion(int vertexId){
-        return !attractor.isInWinningRegion(vertexId);
+        return !buchi.isInWinningRegion(vertexId);
     }
 
     @Override
     public String getLabel(int vertexId) {
-        if (attractor.isInWinningRegion(vertexId)) {
-            return "Not Safe";
+        if (buchi.isInWinningRegion(vertexId)) {
+            return "Not co buchi";
         } else {
-            return "Safe";
+            return "co buchi";
         }
     }
 
@@ -76,6 +74,6 @@ public class Safety implements Algorithm {
 
     @Override
     public Color getEdgeColor(int originId, int destinationId) {
-        return attractor.getEdgeColor(originId,destinationId);
+        return buchi.getEdgeColor(originId,destinationId);
     }
 }

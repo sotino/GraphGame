@@ -105,6 +105,12 @@ public class DijkstraTP implements Algorithm {
     }
 
     @Override
+    public boolean isInWinningRegion(int vertexId){
+        Heap<VertexHeapElement> heap = vertexsHeap.get(vertexId);
+        return !heap.isEmpty() && ! (heap.peek().distance == Integer.MAX_VALUE);
+    }
+
+    @Override
     public String getLabel(int vertexId) {
         Heap<VertexHeapElement> heap = vertexsHeap.get(vertexId);
         if (heap.isEmpty()) {

@@ -10,6 +10,7 @@ import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
+import be.ac.umons.olbregts.graphgame.model.Heap;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
@@ -143,6 +144,11 @@ public class ValueIteration implements Algorithm {
             distance = vertexValues.get(index) - (game.getGraph().getVertexCount() - 1) * W;
         }
         return new EscapeStrategy(mainStrat[index], escapeStrat[index], distance);
+    }
+
+    @Override
+    public boolean isInWinningRegion(int vertexId){
+        return (vertexValues.get(vertexId) != Integer.MAX_VALUE && vertexValues.get(vertexId) != Integer.MIN_VALUE);
     }
 
     @Override

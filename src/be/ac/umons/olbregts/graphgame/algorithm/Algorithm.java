@@ -23,6 +23,8 @@ public interface Algorithm {
 
     public void computeAStep();
 
+    public boolean isInWinningRegion(int vertexId);
+
     public Strategy getStrategy(int index);
 
     public String getLabel(int vertexId);

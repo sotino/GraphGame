@@ -46,7 +46,7 @@ public class Attractor implements Algorithm {
         this.winningPlayer = winningPlayer;
     }
 
-    public boolean isAttractor(int vertexId){
+    public boolean isInWinningRegion(int vertexId){
         return attractor[vertexId];
     }
 
