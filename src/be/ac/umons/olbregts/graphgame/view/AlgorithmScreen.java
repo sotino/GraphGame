@@ -151,12 +151,14 @@ public class AlgorithmScreen extends JPanel {
                     algorithm = selected.getAlgorithm();
                     try {
                         algorithm.reset(game);
+                        graphPanel.setAlgorithm(algorithm);
+                        winning.setVisible(false);
+                        enableComponents(commandPanel, true);
                     } catch (IllegalGraphException e1) {
-                        e1.printStackTrace();
+                        JOptionPane.showMessageDialog(AlgorithmScreen.this,e1.getMessage(),"Error during initialization",JOptionPane.ERROR_MESSAGE);
+                        enableComponents(algorithmSelection, true);
+                        winning.setVisible(false);
                     }
-                    graphPanel.setAlgorithm(algorithm);
-                    winning.setVisible(false);
-                    enableComponents(commandPanel, true);
                 }
             }
         });
@@ -178,7 +180,6 @@ public class AlgorithmScreen extends JPanel {
                 algorithm.computeAStep();
                 updateGraph();
                 if (algorithm.isEnded()) {
-                    System.out.println("eeeeee");
                     enableComponents(commandPanel, false);
                     reload.setEnabled(true);
                     changeAlgo.setEnabled(true);
