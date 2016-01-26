@@ -16,6 +16,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.*;
 import java.util.Timer;
 
@@ -51,7 +53,7 @@ public class AlgorithmScreen extends JPanel {
 
     private GraphPanel graphPanel;
 
-    public AlgorithmScreen(Graph graph) {
+    public AlgorithmScreen(Graph graph) throws ParseException {
         this.graph = graph;
         autoStepStarted = false;
         availableAlgo = AlgorithmesFactory.getAvailableAlgorithm().toArray(new AlgorithmInfo[0]);
@@ -155,7 +157,7 @@ public class AlgorithmScreen extends JPanel {
                         winning.setVisible(false);
                         enableComponents(commandPanel, true);
                     } catch (IllegalGraphException e1) {
-                        JOptionPane.showMessageDialog(AlgorithmScreen.this,e1.getMessage(),"Error during initialization",JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(AlgorithmScreen.this, e1.getMessage(), "Error during initialization", JOptionPane.ERROR_MESSAGE);
                         enableComponents(algorithmSelection, true);
                         winning.setVisible(false);
                     }
@@ -206,15 +208,8 @@ public class AlgorithmScreen extends JPanel {
                     resetGraph();
                     enableComponents(commandPanel, true);
                 } catch (IllegalGraphException e1) {
-                    e1.printStackTrace();
+                    //Can't happen cause the graph was validated before
                 }
-                //   try {
-                // algorithm.reset(graph);
-                //renderer.reset();
-                //enableComponents(commandPanel, true);
-                //     } catch (IllegalGraphException ex) {
-                //       JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
-                // }
             }
         });
 
@@ -230,14 +225,8 @@ public class AlgorithmScreen extends JPanel {
                     enableComponents(commandPanel, false);
                     enableComponents(algorithmSelection, true);
                 } catch (IllegalGraphException e1) {
-                    e1.printStackTrace();
+                    //Can't happen cause the graph was validated before
                 }
-                //   try {
-                //     algorithm.reset(graph);
-                //renderer.reset();
-                // } catch (IllegalGraphException ex) {
-                //   JOptionPane.showMessageDialog(GraphView.this, ex.getMessage(), "Impossible to load the graph", JOptionPane.ERROR_MESSAGE);
-                // }
 
             }
         });

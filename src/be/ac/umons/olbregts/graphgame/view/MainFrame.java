@@ -10,6 +10,7 @@ import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphO
 import javax.swing.*;
 import java.awt.*;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,7 +19,7 @@ import java.util.logging.Logger;
  */
 public class MainFrame extends javax.swing.JFrame {
 
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel homeImage;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
@@ -35,7 +36,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void initComponents() {
 
-        jLabel1 = new javax.swing.JLabel();
+        homeImage = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem3 = new javax.swing.JMenuItem();
@@ -47,9 +48,9 @@ public class MainFrame extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/home.jpg"))); // NOI18N
-        jLabel1.setText("jLabel1");
-        getContentPane().add(jLabel1, java.awt.BorderLayout.CENTER);
+        homeImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/home.jpg")));
+        homeImage.setText("homeImage");
+        getContentPane().add(homeImage, java.awt.BorderLayout.CENTER);
 
         jMenu1.setText("Graph");
 
@@ -121,7 +122,13 @@ public class MainFrame extends javax.swing.JFrame {
 
     protected void loadGraph(GraphObjectOriented graphModel) {
         getContentPane().removeAll();
-        getContentPane().add(new AlgorithmScreen(graphModel), BorderLayout.CENTER);
+        try {
+            getContentPane().add(new AlgorithmScreen(graphModel), BorderLayout.CENTER);
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(this, "Error during the parsing of the configuration file.\n" + e.getMessage(), "Error while loading available algorithms", JOptionPane.ERROR_MESSAGE);
+            getContentPane().add(homeImage, java.awt.BorderLayout.CENTER);
+            repaint();
+        }
         pack();
     }
 }

@@ -101,7 +101,7 @@ public class Buchi implements Algorithm {
                 }
             }
         } catch (IllegalGraphException e) {
-            e.printStackTrace();
+            //Can't happen cause if the graph is valid for Buchi it's valid for Attrator.
         }
         if (ended) {
             for (int i = 0; i < g.getVertexCount(); i++) {

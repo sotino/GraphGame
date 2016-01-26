@@ -207,7 +207,7 @@ public class ValueIteration implements Algorithm {
                 }
             }
         } catch (IllegalGraphException ex) {
-            //Can't happend. Cause if the graph is valid for ValueIteration it's valid for Attractor
+            //Can't happen. Cause if the graph is valid for ValueIteration it's valid for Attractor.
         }
     }
 

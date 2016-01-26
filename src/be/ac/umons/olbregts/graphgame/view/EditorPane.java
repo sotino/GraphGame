@@ -112,9 +112,9 @@ public class EditorPane extends JPanel {
                     try {
                         GraphLoader.saveGraph((GraphObjectOriented) graphPanel.getGraphModel(), fileName);
                     } catch (UnsupportedEncodingException ex) {
-                        Logger.getLogger(EditorPane.class.getName()).log(Level.SEVERE, null, ex);
+                        JOptionPane.showMessageDialog(EditorPane.this,"UTF-8 encoding was not supported.\nThe graph was not saved.","Error during the save",JOptionPane.ERROR_MESSAGE);
                     } catch (FileNotFoundException ex) {
-                        Logger.getLogger(EditorPane.class.getName()).log(Level.SEVERE, null, ex);
+                        JOptionPane.showMessageDialog(EditorPane.this,"The file can't be created.\nThe graph was not saved.","Error during the save",JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }

@@ -208,11 +208,6 @@ public class DijkstraTP implements Algorithm {
         availableEdges.set(uIndex, availableEdges.get(uIndex) - 1);
         int succRemoved = vertexsHeap.get(uIndex).extractMin().succ;
         blockedEdge.get(uIndex).add(succRemoved);
-        //TODO test utility of cost
-        int cost = Integer.MAX_VALUE;
-        if (!vertexsHeap.get(uIndex).isEmpty()) {
-            cost = vertexsHeap.get(uIndex).peek().distance;
-        }
         q.heapify(0);
     }
 
