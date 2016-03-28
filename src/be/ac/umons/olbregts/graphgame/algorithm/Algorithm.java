@@ -8,29 +8,28 @@ import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 /**
  * @author Simon
  */
 public interface Algorithm {
 
-    public void reset(Game game) throws IllegalGraphException;
+    void reset(Game game) throws IllegalGraphException;
 
-    public boolean isEnded();
+    boolean isEnded();
 
-    public void compute();
+    void compute();
 
-    public void computeAStep();
+    void computeAStep();
 
-    public boolean isInWinningRegion(int vertexId);
+    boolean isInWinningRegion(int vertexId);
 
-    public Strategy getStrategy(int index);
+    Strategy getStrategy(int index);
 
-    public String getLabel(int vertexId);
+    String getLabel(int vertexId);
 
-    public Color getVertexColor(int vertexId);
+    Color getVertexColor(int vertexId);
 
-    public Color getEdgeColor(int originId, int destinationId);
+    Color getEdgeColor(int originId, int destinationId);
 
 }

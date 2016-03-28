@@ -49,7 +49,7 @@ public class CoBuchi implements Algorithm {
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId){
+    public boolean isInWinningRegion(int vertexId) {
         return !buchi.isInWinningRegion(vertexId);
     }
 
@@ -64,8 +64,8 @@ public class CoBuchi implements Algorithm {
 
     @Override
     public Color getVertexColor(int vertexId) {
-        for(int target : game.getWiningCondition()){
-            if(vertexId == target){
+        for (int target : game.getWiningCondition()) {
+            if (vertexId == target) {
                 return Color.YELLOW;
             }
         }
@@ -74,6 +74,6 @@ public class CoBuchi implements Algorithm {
 
     @Override
     public Color getEdgeColor(int originId, int destinationId) {
-        return buchi.getEdgeColor(originId,destinationId);
+        return buchi.getEdgeColor(originId, destinationId);
     }
 }

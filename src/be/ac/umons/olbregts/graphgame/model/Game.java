@@ -9,7 +9,7 @@ package be.ac.umons.olbregts.graphgame.model;
  */
 public interface Game<E> {
 
-    public Graph getGraph();
+    Graph getGraph();
 
-    public E getWiningCondition();
+    E getWiningCondition();
 }

@@ -4,8 +4,8 @@
  */
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
-import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
+import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
 import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
@@ -42,11 +42,11 @@ public class Attractor implements Algorithm {
         }
     }
 
-    public void setWinningPlayer(int winningPlayer){
+    public void setWinningPlayer(int winningPlayer) {
         this.winningPlayer = winningPlayer;
     }
 
-    public boolean isInWinningRegion(int vertexId){
+    public boolean isInWinningRegion(int vertexId) {
         return attractor[vertexId];
     }
 
@@ -95,19 +95,19 @@ public class Attractor implements Algorithm {
                 }
             }
         }
-        if(ended){
-            for(int i = 0;i<game.getGraph().getVertexCount(); i ++){
-                if(strat[i] < 0){
-                    if(attractor[i]){
-                        for(int succId:game.getGraph().getSuccessors(i)){
-                            if(attractor[succId]){
+        if (ended) {
+            for (int i = 0; i < game.getGraph().getVertexCount(); i++) {
+                if (strat[i] < 0) {
+                    if (attractor[i]) {
+                        for (int succId : game.getGraph().getSuccessors(i)) {
+                            if (attractor[succId]) {
                                 strat[i] = succId;
                                 break;
                             }
                         }
-                    }else{
-                        for(int succId:game.getGraph().getSuccessors(i)){
-                            if(!attractor[succId]){
+                    } else {
+                        for (int succId : game.getGraph().getSuccessors(i)) {
+                            if (!attractor[succId]) {
                                 strat[i] = succId;
                                 break;
                             }
@@ -134,8 +134,8 @@ public class Attractor implements Algorithm {
 
     @Override
     public Color getVertexColor(int vertexId) {
-        for(int target : game.getWiningCondition()){
-            if(vertexId == target){
+        for (int target : game.getWiningCondition()) {
+            if (vertexId == target) {
                 return Color.YELLOW;
             }
         }
@@ -145,8 +145,8 @@ public class Attractor implements Algorithm {
     @Override
     public Color getEdgeColor(int originId, int destinationId) {
         int[] selected = getStrategy(originId).getSelectedEdge();
-        for(int v : selected){
-            if(v == destinationId){
+        for (int v : selected) {
+            if (v == destinationId) {
                 return Color.GREEN;
             }
         }

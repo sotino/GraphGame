@@ -8,8 +8,6 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Simon on 19-01-16.
@@ -51,7 +49,7 @@ public class Safety implements Algorithm {
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId){
+    public boolean isInWinningRegion(int vertexId) {
         return !attractor.isInWinningRegion(vertexId);
     }
 
@@ -66,8 +64,8 @@ public class Safety implements Algorithm {
 
     @Override
     public Color getVertexColor(int vertexId) {
-        for(int target : game.getWiningCondition()){
-            if(vertexId == target){
+        for (int target : game.getWiningCondition()) {
+            if (vertexId == target) {
                 return Color.YELLOW;
             }
         }
@@ -76,6 +74,6 @@ public class Safety implements Algorithm {
 
     @Override
     public Color getEdgeColor(int originId, int destinationId) {
-        return attractor.getEdgeColor(originId,destinationId);
+        return attractor.getEdgeColor(originId, destinationId);
     }
 }

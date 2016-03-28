@@ -4,9 +4,9 @@
  */
 package be.ac.umons.olbregts.graphgame.view;
 
+import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmInfo;
 import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmesFactory;
-import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
@@ -14,12 +14,9 @@ import be.ac.umons.olbregts.graphgame.view.wining_condition.WinningPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.FileNotFoundException;
 import java.text.ParseException;
-import java.util.*;
 import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Permet d'afficher un graphe
@@ -132,103 +129,82 @@ public class AlgorithmScreen extends JPanel {
     }
 
     private void initButtonAction() {
-        applyAlgo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AlgorithmInfo selected = (AlgorithmInfo) algoSelector.getSelectedItem();
-                enableComponents(algorithmSelection, false);
-                WinningPanel winningPanel = selected.getWinningPanel();
-                winningPanel.setGraph(graph);
-                winning.add(winningPanel, BorderLayout.CENTER);
-                winning.setVisible(true);
-            }
+        applyAlgo.addActionListener(e -> {
+            AlgorithmInfo selected = (AlgorithmInfo) algoSelector.getSelectedItem();
+            enableComponents(algorithmSelection, false);
+            WinningPanel winningPanel = selected.getWinningPanel();
+            winningPanel.setGraph(graph);
+            winning.add(winningPanel, BorderLayout.CENTER);
+            winning.setVisible(true);
         });
 
-        validWinning.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                AlgorithmInfo selected = (AlgorithmInfo) algoSelector.getSelectedItem();
-                if (selected.getWinningPanel().canExtractGame()) {
-                    game = selected.getWinningPanel().getGame();
-                    algorithm = selected.getAlgorithm();
-                    try {
-                        algorithm.reset(game);
-                        graphPanel.setAlgorithm(algorithm);
-                        winning.setVisible(false);
-                        enableComponents(commandPanel, true);
-                    } catch (IllegalGraphException e1) {
-                        JOptionPane.showMessageDialog(AlgorithmScreen.this, e1.getMessage(), "Error during initialization", JOptionPane.ERROR_MESSAGE);
-                        enableComponents(algorithmSelection, true);
-                        winning.setVisible(false);
-                    }
+        validWinning.addActionListener(e -> {
+            AlgorithmInfo selected = (AlgorithmInfo) algoSelector.getSelectedItem();
+            if (selected.getWinningPanel().canExtractGame()) {
+                game = selected.getWinningPanel().getGame();
+                algorithm = selected.getAlgorithm();
+                try {
+                    algorithm.reset(game);
+                    graphPanel.setAlgorithm(algorithm);
+                    winning.setVisible(false);
+                    enableComponents(commandPanel, true);
+                } catch (IllegalGraphException e1) {
+                    JOptionPane.showMessageDialog(AlgorithmScreen.this, e1.getMessage(), "Error during initialization", JOptionPane.ERROR_MESSAGE);
+                    enableComponents(algorithmSelection, true);
+                    winning.setVisible(false);
                 }
             }
         });
 
-        startAutoStep.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (autoStepStarted) {
-                    stopAutoStart();
-                } else {
-                    startAutoStart();
-                }
+        startAutoStep.addActionListener(e -> {
+            if (autoStepStarted) {
+                stopAutoStart();
+            } else {
+                startAutoStart();
             }
         });
 
-        step.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                algorithm.computeAStep();
-                updateGraph();
-                if (algorithm.isEnded()) {
-                    enableComponents(commandPanel, false);
-                    reload.setEnabled(true);
-                    changeAlgo.setEnabled(true);
-                }
-            }
-        });
-
-        compute.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                algorithm.compute();
-                updateGraph();
+        step.addActionListener(e -> {
+            algorithm.computeAStep();
+            updateGraph();
+            if (algorithm.isEnded()) {
                 enableComponents(commandPanel, false);
                 reload.setEnabled(true);
                 changeAlgo.setEnabled(true);
             }
         });
 
-        reload.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    algorithm.reset(game);
-                    resetGraph();
-                    enableComponents(commandPanel, true);
-                } catch (IllegalGraphException e1) {
-                    //Can't happen cause the graph was validated before
-                }
+        compute.addActionListener(e -> {
+            algorithm.compute();
+            updateGraph();
+            enableComponents(commandPanel, false);
+            reload.setEnabled(true);
+            changeAlgo.setEnabled(true);
+        });
+
+        reload.addActionListener(e -> {
+            try {
+                algorithm.reset(game);
+                resetGraph();
+                enableComponents(commandPanel, true);
+            } catch (IllegalGraphException e1) {
+                //Can't happen cause the graph was validated before
             }
         });
 
-        changeAlgo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    algorithm.reset(game);
-                    updateGraph();
-                    enableComponents(commandPanel, true);
-                    resetGraph();
-                    graphPanel.resetView();
-                    enableComponents(commandPanel, false);
-                    enableComponents(algorithmSelection, true);
-                } catch (IllegalGraphException e1) {
-                    //Can't happen cause the graph was validated before
-                }
-
+        changeAlgo.addActionListener(e -> {
+            try {
+                algorithm.reset(game);
+                updateGraph();
+                enableComponents(commandPanel, true);
+                resetGraph();
+                graphPanel.resetView();
+                enableComponents(commandPanel, false);
+                enableComponents(algorithmSelection, true);
+            } catch (IllegalGraphException e1) {
+                //Can't happen cause the graph was validated before
             }
+
         });
 
     }

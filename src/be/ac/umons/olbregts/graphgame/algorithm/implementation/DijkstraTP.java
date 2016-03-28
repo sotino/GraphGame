@@ -4,8 +4,8 @@
  */
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
-import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
+import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
 import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
@@ -105,9 +105,9 @@ public class DijkstraTP implements Algorithm {
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId){
+    public boolean isInWinningRegion(int vertexId) {
         Heap<VertexHeapElement> heap = vertexsHeap.get(vertexId);
-        return !heap.isEmpty() && ! (heap.peek().distance == Integer.MAX_VALUE);
+        return !heap.isEmpty() && !(heap.peek().distance == Integer.MAX_VALUE);
     }
 
     @Override
@@ -117,18 +117,18 @@ public class DijkstraTP implements Algorithm {
             return "+ inf";
         }
         int value = heap.peek().distance;
-        if(value == Integer.MAX_VALUE){
-          return "+ inf";
+        if (value == Integer.MAX_VALUE) {
+            return "+ inf";
         }
         return "" + value;
     }
 
     @Override
     public Color getVertexColor(int vertexId) {
-        if(vertexId == lastSelected && ! isEnded())
+        if (vertexId == lastSelected && !isEnded())
             return Color.CYAN;
-        for(int target : game.getWiningCondition()){
-            if(vertexId == target){
+        for (int target : game.getWiningCondition()) {
+            if (vertexId == target) {
                 return Color.YELLOW;
             }
         }
@@ -137,14 +137,14 @@ public class DijkstraTP implements Algorithm {
 
     @Override
     public Color getEdgeColor(int originId, int destinationId) {
-        for(int d : blockedEdge.get(originId)){
-            if(d == destinationId){
+        for (int d : blockedEdge.get(originId)) {
+            if (d == destinationId) {
                 return Color.RED;
             }
         }
         Strategy strategy = getStrategy(originId);
-        for(int d : strategy.getSelectedEdge()){
-            if(destinationId == d){
+        for (int d : strategy.getSelectedEdge()) {
+            if (destinationId == d) {
                 return Color.GREEN;
             }
         }
@@ -157,9 +157,9 @@ public class DijkstraTP implements Algorithm {
         availableEdges = new ArrayList<>(vertexCount);
         blockedEdge = new ArrayList<>(vertexCount);
         for (int i = 0; i < vertexCount; i++) {
-            vertexsHeap.add(new Heap<VertexHeapElement>());
+            vertexsHeap.add(new Heap<>());
             availableEdges.add(game.getGraph().getSuccessorCount(i));
-            blockedEdge.add(new ArrayList<Integer>());
+            blockedEdge.add(new ArrayList<>());
         }
         for (int target : targets) {
             vertexsHeap.get(target).insert(new VertexHeapElement(0, -1));

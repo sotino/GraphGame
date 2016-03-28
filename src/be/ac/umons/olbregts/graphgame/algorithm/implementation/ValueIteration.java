@@ -4,13 +4,12 @@
  */
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
-import be.ac.umons.olbregts.graphgame.algorithm.EscapeStrategy;
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
+import be.ac.umons.olbregts.graphgame.algorithm.EscapeStrategy;
 import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
-import be.ac.umons.olbregts.graphgame.model.Heap;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
@@ -147,17 +146,17 @@ public class ValueIteration implements Algorithm {
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId){
+    public boolean isInWinningRegion(int vertexId) {
         return (vertexValues.get(vertexId) != Integer.MAX_VALUE && vertexValues.get(vertexId) != Integer.MIN_VALUE);
     }
 
     @Override
     public String getLabel(int vertexId) {
         int value = vertexValues.get(vertexId);
-        if(value == Integer.MAX_VALUE){
+        if (value == Integer.MAX_VALUE) {
             return "+ inf";
         }
-        if(value == Integer.MIN_VALUE){
+        if (value == Integer.MIN_VALUE) {
             return "- inf";
         }
         return "" + value;
@@ -165,8 +164,8 @@ public class ValueIteration implements Algorithm {
 
     @Override
     public Color getVertexColor(int vertexId) {
-        for(int target : game.getWiningCondition()){
-            if(vertexId == target){
+        for (int target : game.getWiningCondition()) {
+            if (vertexId == target) {
                 return Color.YELLOW;
             }
         }
@@ -176,10 +175,10 @@ public class ValueIteration implements Algorithm {
     @Override
     public Color getEdgeColor(int originId, int destinationId) {
         EscapeStrategy strategy = (EscapeStrategy) getStrategy(originId);
-        if(destinationId == strategy.getMainChoose()){
+        if (destinationId == strategy.getMainChoose()) {
             return Color.GREEN;
         }
-        if(destinationId == strategy.getEscapeChoose()){
+        if (destinationId == strategy.getEscapeChoose()) {
             return Color.GREEN.darker();
         }
         return null;

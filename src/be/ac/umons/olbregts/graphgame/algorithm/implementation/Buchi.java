@@ -9,7 +9,7 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,7 +40,7 @@ public class Buchi implements Algorithm {
         ended = false;
     }
 
-    public void setWinningPlayer(int winningPlayer){
+    public void setWinningPlayer(int winningPlayer) {
         this.winningPlayer = winningPlayer;
     }
 
@@ -74,7 +74,7 @@ public class Buchi implements Algorithm {
             ReachibilityGame trapGame = new ReachibilityGame(g, trapTargets);
             Attractor trap = new Attractor();
             trap.reset(trapGame);
-            trap.setWinningPlayer((winningPlayer == Graph.PLAYER1?Graph.PLAYER2:Graph.PLAYER1));
+            trap.setWinningPlayer((winningPlayer == Graph.PLAYER1 ? Graph.PLAYER2 : Graph.PLAYER1));
             trap.compute();
             for (int i = 0; i < g.getVertexCount(); i++) {
                 if (trap.isInWinningRegion(i) && !deleted[i]) {
@@ -83,10 +83,10 @@ public class Buchi implements Algorithm {
                     int[] trapStrat = trap.getStrategy(i).getSelectedEdge();
                     if (trapStrat.length > 0) {
                         strat[i] = trapStrat[0];
-                        if(game.getWiningCondition().contains(strat[i])){
-                            for(int succId:g.getSuccessors(i)){
-                                if(trap.isInWinningRegion(succId) && ! game.getWiningCondition().contains(succId)){
-                                    strat[i]=succId;
+                        if (game.getWiningCondition().contains(strat[i])) {
+                            for (int succId : g.getSuccessors(i)) {
+                                if (trap.isInWinningRegion(succId) && !game.getWiningCondition().contains(succId)) {
+                                    strat[i] = succId;
                                     break;
                                 }
                             }
@@ -120,7 +120,7 @@ public class Buchi implements Algorithm {
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId){
+    public boolean isInWinningRegion(int vertexId) {
         return !deleted[vertexId];
     }
 
@@ -148,7 +148,7 @@ public class Buchi implements Algorithm {
         if (strat[originId] == destinationId) {
             return Color.GREEN;
         }
-        if(deleted[originId] || deleted[destinationId]){
+        if (deleted[originId] || deleted[destinationId]) {
             return Color.RED;
         }
         return null;

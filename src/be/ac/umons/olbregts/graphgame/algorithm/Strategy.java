@@ -9,8 +9,8 @@ package be.ac.umons.olbregts.graphgame.algorithm;
  */
 public interface Strategy {
 
-    public int[] getSelectedEdge();
+    int[] getSelectedEdge();
 
-    public String printChoose();
+    String printChoose();
 
 }

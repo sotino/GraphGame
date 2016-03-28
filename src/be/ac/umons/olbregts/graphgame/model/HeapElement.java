@@ -8,7 +8,7 @@ package be.ac.umons.olbregts.graphgame.model;
  * @author Simon
  */
 public interface HeapElement<E> extends Comparable<E> {
-    public int getHeapIndex();
+    int getHeapIndex();
 
-    public void setHeapIndex(int index);
+    void setHeapIndex(int index);
 }

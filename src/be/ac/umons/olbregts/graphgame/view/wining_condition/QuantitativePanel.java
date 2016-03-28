@@ -19,7 +19,7 @@ public class QuantitativePanel extends WinningPanel {
         SpinnerNumberModel model = new SpinnerNumberModel();
         model.setValue(0);
         spinner = new JSpinner(model);
-        add(spinner,BorderLayout.CENTER);
+        add(spinner, BorderLayout.CENTER);
     }
 
     @Override

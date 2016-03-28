@@ -4,9 +4,6 @@ import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import java.awt.*;
-import java.util.ArrayList;
 
 /**
  * Created by Simon on 19-01-16.
@@ -33,7 +30,6 @@ public abstract class WinningPanel extends JPanel {
     public abstract Game getGame();
 
     public abstract boolean canExtractGame();
-
 
 
 }

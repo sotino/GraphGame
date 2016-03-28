@@ -78,7 +78,7 @@ public class AlgorithmesFactory {
             }
             return algorithms;
         } catch (FileNotFoundException e) {
-            throw new ParseException("The file ./algorithm.csv can't be found",0);
+            throw new ParseException("The file ./algorithm.csv can't be found", 0);
         }
     }
 }

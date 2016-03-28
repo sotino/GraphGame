@@ -73,7 +73,7 @@ public class GraphLoader {
         ArrayList<ArrayList<Edge>> successor = new ArrayList<>();
         List<Vertex> vertexs = graph.getVertexs();
         for (int i = 0; i < vertexs.size(); i++) {
-            successor.add(new ArrayList<Edge>());
+            successor.add(new ArrayList<>());
         }
 
         for (Vertex v : graph.getVertexs()) {
@@ -93,7 +93,7 @@ public class GraphLoader {
 
         //Player
         for (Vertex v : graph.getVertexs()) {
-                writer.print("" + v.getPlayer() + " ");
+            writer.print("" + v.getPlayer() + " ");
         }
         writer.println();
 

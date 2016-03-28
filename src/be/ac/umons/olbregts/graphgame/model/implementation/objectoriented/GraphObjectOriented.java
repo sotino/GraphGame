@@ -7,7 +7,6 @@ package be.ac.umons.olbregts.graphgame.model.implementation.objectoriented;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

@@ -10,12 +10,8 @@ import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphO
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Simon
@@ -51,21 +47,11 @@ public class EditorPane extends JPanel {
         JButton vertex1 = new JButton("Player 1 vertex");
         vertex1.setMaximumSize(new Dimension(Integer.MAX_VALUE, vertex1.getMaximumSize().height));
         vertexAddPanel.add(vertex1);
-        vertex1.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                EditorPane.this.graphPanel.addVertex(1);
-            }
-        });
+        vertex1.addActionListener(e -> EditorPane.this.graphPanel.addVertex(1));
         JButton vertex2 = new JButton("Player 2 vertex");
         vertex2.setMaximumSize(new Dimension(Integer.MAX_VALUE, vertex2.getMaximumSize().height));
         vertexAddPanel.add(vertex2);
-        vertex2.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                EditorPane.this.graphPanel.addVertex(2);
-            }
-        });
+        vertex2.addActionListener(e -> EditorPane.this.graphPanel.addVertex(2));
         menu.add(vertexAddPanel);
         menu.add(Box.createVerticalStrut(6));
 
@@ -73,49 +59,33 @@ public class EditorPane extends JPanel {
         JButton delete = new JButton("Delete selected");
         delete.setMaximumSize(new Dimension(Integer.MAX_VALUE, delete.getMaximumSize().height));
         menu.add(delete);
-        delete.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                EditorPane.this.graphPanel.deleteSelected();
-            }
-        });
+        delete.addActionListener(e -> EditorPane.this.graphPanel.deleteSelected());
         menu.add(Box.createVerticalStrut(6));
 
         JButton layout = new JButton("Apply layout");
         layout.setMaximumSize(new Dimension(Integer.MAX_VALUE, layout.getMaximumSize().height));
         menu.add(layout);
-        layout.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                EditorPane.this.graphPanel.applyLayout();
-            }
-        });
+        layout.addActionListener(e -> EditorPane.this.graphPanel.applyLayout());
         menu.add(Box.createVerticalStrut(12));
 
         JButton save = new JButton("Save");
         save.setMaximumSize(new Dimension(Integer.MAX_VALUE, save.getMaximumSize().height));
         menu.add(save);
-        save.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (fileName == null) {
-                    JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-                    int returnVal = fc.showSaveDialog(EditorPane.this);
-                    if (returnVal == JFileChooser.APPROVE_OPTION) {
-                        fileName = fc.getSelectedFile().getAbsolutePath();
-                    }
+        save.addActionListener(e -> {
+            if (fileName == null) {
+                JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+                int returnVal = fc.showSaveDialog(EditorPane.this);
+                if (returnVal == JFileChooser.APPROVE_OPTION) {
+                    fileName = fc.getSelectedFile().getAbsolutePath();
                 }
-                if (fileName != null) {
-                    try {
-                        GraphLoader.saveGraph((GraphObjectOriented) graphPanel.getGraphModel(), fileName);
-                    } catch (UnsupportedEncodingException ex) {
-                        JOptionPane.showMessageDialog(EditorPane.this,"UTF-8 encoding was not supported.\nThe graph was not saved.","Error during the save",JOptionPane.ERROR_MESSAGE);
-                    } catch (FileNotFoundException ex) {
-                        JOptionPane.showMessageDialog(EditorPane.this,"The file can't be created.\nThe graph was not saved.","Error during the save",JOptionPane.ERROR_MESSAGE);
-                    }
+            }
+            if (fileName != null) {
+                try {
+                    GraphLoader.saveGraph((GraphObjectOriented) graphPanel.getGraphModel(), fileName);
+                } catch (UnsupportedEncodingException ex) {
+                    JOptionPane.showMessageDialog(EditorPane.this, "UTF-8 encoding was not supported.\nThe graph was not saved.", "Error during the save", JOptionPane.ERROR_MESSAGE);
+                } catch (FileNotFoundException ex) {
+                    JOptionPane.showMessageDialog(EditorPane.this, "The file can't be created.\nThe graph was not saved.", "Error during the save", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -124,13 +94,7 @@ public class EditorPane extends JPanel {
         JButton load = new JButton("Load for algorithm");
         load.setMaximumSize(new Dimension(Integer.MAX_VALUE, load.getMaximumSize().height));
         menu.add(load);
-        load.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainFrame.loadGraph((GraphObjectOriented) graphPanel.getGraphModel());
-            }
-        });
+        load.addActionListener(e -> mainFrame.loadGraph((GraphObjectOriented) graphPanel.getGraphModel()));
 
         if (graph == null) {
             graph = new GraphObjectOriented();
