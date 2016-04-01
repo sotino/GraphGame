@@ -17,8 +17,8 @@ public class MeanPayoff implements Algorithm {
 
     private double[] value;
     private int[] strat;
-    private int k;
-    private int kMax;
+    private long k;
+    private long kMax;
     private QuantitativeGame game;
 
     @Override

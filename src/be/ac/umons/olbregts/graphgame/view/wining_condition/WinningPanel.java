@@ -29,6 +29,8 @@ public abstract class WinningPanel extends JPanel {
 
     public abstract Game getGame();
 
+    public abstract Game getDefaultGame(Graph graph);
+
     public abstract boolean canExtractGame();
 
 

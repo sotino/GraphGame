@@ -37,6 +37,7 @@ public class MainFrame extends javax.swing.JFrame {
         JMenuItem jMenuItem3 = new JMenuItem();
         JMenuItem jMenuItem1 = new JMenuItem();
         JMenuItem jMenuItem2 = new JMenuItem();
+        JMenuItem jMenuItem4 = new JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Two player graph");
@@ -60,6 +61,10 @@ public class MainFrame extends javax.swing.JFrame {
         jMenuItem2.setText("Edit");
         jMenuItem2.addActionListener(evt -> jMenuItem2ActionPerformed(evt));
         jMenu1.add(jMenuItem2);
+
+        jMenuItem4.setText("Benchmark");
+        jMenuItem4.addActionListener(evt -> jMenuItem4ActionPerformed(evt));
+        jMenu1.add(jMenuItem4);
 
         jMenuBar1.add(jMenu1);
 
@@ -101,6 +106,12 @@ public class MainFrame extends javax.swing.JFrame {
         } catch (FileNotFoundException ex) {
             Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void jMenuItem4ActionPerformed(java.awt.event.ActionEvent evt) {
+        getContentPane().removeAll();
+        getContentPane().add(new BenchMark(), BorderLayout.CENTER);
+        pack();
     }
 
     protected void loadGraph(GraphObjectOriented graphModel) {

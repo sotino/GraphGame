@@ -1,6 +1,7 @@
 package be.ac.umons.olbregts.graphgame.view.wining_condition;
 
 import be.ac.umons.olbregts.graphgame.model.Game;
+import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import javax.swing.*;
@@ -46,6 +47,13 @@ public class ReachabilityPanel extends WinningPanel {
             }
         }
         return new ReachibilityGame(getGraph(), targets);
+    }
+
+    @Override
+    public Game getDefaultGame(Graph graph) {
+        List<Integer> targets = new ArrayList<>(1);
+        targets.add(0);
+        return new ReachibilityGame(graph,targets);
     }
 
     @Override

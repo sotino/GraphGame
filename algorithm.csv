@@ -5,4 +5,6 @@ Buchi;be.ac.umons.olbregts.graphgame.algorithm.implementation.Buchi;be.ac.umons.
 Co Buchi;be.ac.umons.olbregts.graphgame.algorithm.implementation.CoBuchi;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
 Dijkstra TP;be.ac.umons.olbregts.graphgame.algorithm.implementation.DijkstraTP;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
 Value Iteration;be.ac.umons.olbregts.graphgame.algorithm.implementation.ValueIteration;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
-Mean payoff;be.ac.umons.olbregts.graphgame.algorithm.implementation.MeanPayoff;be.ac.umons.olbregts.graphgame.view.wining_condition.QuantitativePanel
+Mean Payoff;be.ac.umons.olbregts.graphgame.algorithm.implementation.MeanPayoff;be.ac.umons.olbregts.graphgame.view.wining_condition.QuantitativePanel
+Good Window;be.ac.umons.olbregts.graphgame.algorithm.implementation.GoodWin;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowingQuantitativePanel
+Direct Fixed Windowing Mean Payoff;be.ac.umons.olbregts.graphgame.algorithm.implementation.DirectFWMP;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowingQuantitativePanel
