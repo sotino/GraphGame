@@ -6,7 +6,8 @@ package be.ac.umons.olbregts.graphgame.model.implementation.objectoriented;
 
 import be.ac.umons.olbregts.graphgame.model.Graph;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -14,71 +15,76 @@ import java.util.List;
  */
 public class GraphObjectOriented implements Graph {
 
-    private ArrayList<Vertex> vertexs;
+    private HashMap<String, Vertex> vertexs;
 
     public GraphObjectOriented() {
-        vertexs = new ArrayList<>();
+        vertexs = new HashMap<>();
     }
 
     public GraphObjectOriented(List<Integer> head, List<Integer> player, List<Integer> succ, List<Integer> cost) {
-        vertexs = new ArrayList<>(head.size() - 1);
+        vertexs = new HashMap<>(head.size() - 1);
         for (int i = 0; i < head.size() - 1; i++) {
             int p = player.get(i) == 0 ? 1 : player.get(i);
-            Vertex v = new Vertex(i, p);
-            vertexs.add(v);
+            Vertex v = new Vertex("" + i, p);
+            vertexs.put("" + i, v);
         }
         for (int i = 0; i < head.size() - 1; i++) {
             for (int j = head.get(i) - 1; j < head.get(i + 1) - 1; j++) {
-                Edge e = new Edge(vertexs.get(i), vertexs.get(succ.get(j) - 1), cost.get(j));
+                Edge e = new Edge(vertexs.get("" + i), vertexs.get("" + (succ.get(j) - 1)), cost.get(j));
                 e.getTarget().addPred(e);
                 e.getSource().addSucc(e);
             }
         }
     }
 
-    public List<Vertex> getVertexs() {
-        return vertexs;
+    public String[] getVertexsId() {
+        return vertexs.keySet().toArray(new String[getVertexCount()]);
     }
 
-    public int addVertex(int player) {
-        Vertex v = new Vertex(vertexs.size(), player);
-        vertexs.add(v);
-        return v.getIndex();
+    public boolean contains(String vertexId) {
+        return vertexs.containsKey(vertexId);
     }
 
-    public void deleteVertex(int index) {
-        Vertex old = vertexs.get(index);
-        vertexs.remove(old);
-        for (int i = 0; i < vertexs.size(); i++) {
-            vertexs.get(i).setIndex(i);
-            vertexs.get(i).removePred(old);
-            vertexs.get(i).removeSucc(old);
+    public Collection<Vertex> getVertexs() {
+        return vertexs.values();
+    }
+
+    public void addVertex(String vertexId, int player) {
+        Vertex v = new Vertex(vertexId, player);
+        vertexs.put(vertexId, v);
+    }
+
+    public void deleteVertex(String vertexId) {
+        Vertex old = vertexs.get(vertexId);
+        vertexs.remove(vertexId);
+        for (Vertex vertex : vertexs.values()) {
+            vertex.removePred(old);
+            vertex.removeSucc(old);
         }
     }
 
-    public void deleteEdge(int srcIndex, int targetIndex) {
-        if (srcIndex >= vertexs.size()) {
-            throw new IllegalArgumentException("The source index (" + srcIndex + ") is out of range.");
+    public void deleteEdge(String srcId, String targetId) {
+        if (!vertexs.containsKey(srcId)) {
+            throw new IllegalArgumentException("The vertex (" + srcId + ") is not in the graph.");
         }
-
-        if (targetIndex >= vertexs.size()) {
-            throw new IllegalArgumentException("The target index (" + targetIndex + ") is out of range.");
+        if (!vertexs.containsKey(targetId)) {
+            throw new IllegalArgumentException("The vertex (" + targetId + ") is not in the graph.");
         }
-        Vertex src = vertexs.get(srcIndex);
-        Vertex target = vertexs.get(targetIndex);
+        Vertex src = vertexs.get(srcId);
+        Vertex target = vertexs.get(targetId);
         target.removePred(src);
         src.removeSucc(target);
     }
 
-    public boolean addEdge(int srcIndex, int targetIndex, int cost) {
-        if (srcIndex >= vertexs.size()) {
-            throw new IllegalArgumentException("The source index (" + srcIndex + ") is out of range.");
+    public boolean addEdge(String srcId, String targetId, int cost) {
+        if (!vertexs.containsKey(srcId)) {
+            throw new IllegalArgumentException("The vertex (" + srcId + ") is not in the graph.");
         }
-        if (targetIndex >= vertexs.size()) {
-            throw new IllegalArgumentException("The target index (" + targetIndex + ") is out of range.");
+        if (!vertexs.containsKey(targetId)) {
+            throw new IllegalArgumentException("The vertex (" + targetId + ") is not in the graph.");
         }
-        Vertex src = vertexs.get(srcIndex);
-        Vertex target = vertexs.get(targetIndex);
+        Vertex src = vertexs.get(srcId);
+        Vertex target = vertexs.get(targetId);
         Edge e = new Edge(src, target, cost);
         src.addSucc(e);
         return target.addPred(e);
@@ -90,28 +96,28 @@ public class GraphObjectOriented implements Graph {
     }
 
     @Override
-    public int getSuccessorCount(int vertexId) {
+    public int getSuccessorCount(String vertexId) {
         return vertexs.get(vertexId).getSucc().size();
     }
 
     @Override
-    public int getPredecessorCount(int vertexId) {
+    public int getPredecessorCount(String vertexId) {
         return vertexs.get(vertexId).getPred().size();
     }
 
     @Override
-    public int[] getSuccessors(int vertexId) {
+    public String[] getSuccessors(String vertexId) {
         int nbSucc = this.getSuccessorCount(vertexId);
-        int[] successors = new int[nbSucc];
+        String[] successors = new String[nbSucc];
         List<Edge> succ = vertexs.get(vertexId).getSucc();
         for (int i = 0; i < nbSucc; i++) {
-            successors[i] = succ.get(i).getTarget().getIndex();
+            successors[i] = succ.get(i).getTarget().getId();
         }
         return successors;
     }
 
     @Override
-    public int[] getSuccessorsWeight(int vertexId) {
+    public int[] getSuccessorsWeight(String vertexId) {
         int nbSucc = this.getSuccessorCount(vertexId);
         int[] successorsWeight = new int[nbSucc];
         List<Edge> succ = vertexs.get(vertexId).getSucc();
@@ -122,18 +128,18 @@ public class GraphObjectOriented implements Graph {
     }
 
     @Override
-    public int[] getPredecessor(int vertexId) {
+    public String[] getPredecessor(String vertexId) {
         int nbPred = this.getPredecessorCount(vertexId);
-        int[] predecessors = new int[nbPred];
+        String[] predecessors = new String[nbPred];
         List<Edge> pred = vertexs.get(vertexId).getPred();
         for (int i = 0; i < nbPred; i++) {
-            predecessors[i] = pred.get(i).getSource().getIndex();
+            predecessors[i] = pred.get(i).getSource().getId();
         }
         return predecessors;
     }
 
     @Override
-    public int[] getPredecessorWeight(int vertexId) {
+    public int[] getPredecessorWeight(String vertexId) {
         int nbPred = this.getPredecessorCount(vertexId);
         int[] predecessors = new int[nbPred];
         List<Edge> pred = vertexs.get(vertexId).getPred();
@@ -144,41 +150,39 @@ public class GraphObjectOriented implements Graph {
     }
 
     @Override
-    public int getPlayer(int vertexId) {
+    public int getPlayer(String vertexId) {
         return vertexs.get(vertexId).getPlayer();
     }
 
     @Override
-    public boolean hasSuccessors(int vertexId) {
+    public boolean hasSuccessors(String vertexId) {
         return !vertexs.get(vertexId).getSucc().isEmpty();
     }
 
     @Override
-    public boolean hasPredecessors(int vertexId) {
+    public boolean hasPredecessors(String vertexId) {
         return !vertexs.get(vertexId).getPred().isEmpty();
     }
 
     @Override
-    public Graph getSubgraph(int[] vertexs) {
+    public Graph getSubgraph(String[] vertexsId) {
         GraphObjectOriented subGraphe = new GraphObjectOriented();
-        for (int i = 0; i < getVertexCount(); i++) {
-            subGraphe.addVertex(getPlayer(i));
+        for (Vertex vertex : vertexs.values()) {
+            subGraphe.addVertex(vertex.getId(), vertex.getPlayer());
         }
-        for (Vertex v : this.vertexs) {
-            if (contains(vertexs, v.getIndex())) {
-                for (Edge e : v.getSucc()) {
-                    if (contains(vertexs, e.getTarget().getIndex())) {
-                        subGraphe.addEdge(v.getIndex(), e.getTarget().getIndex(), e.getCost());
-                    }
+        for (String sourceId : vertexsId) {
+            for (Edge succ : vertexs.get(sourceId).getSucc()) {
+                if (contains(vertexsId, succ.getTarget().getId())) {
+                    subGraphe.addEdge(sourceId, succ.getTarget().getId(), succ.getCost());
                 }
             }
         }
         return subGraphe;
     }
 
-    public boolean contains(int[] array, int v) {
-        for (int a : array) {
-            if (a == v) {
+    private boolean contains(String[] array, String v) {
+        for (String a : array) {
+            if (a.equals(v)) {
                 return true;
             }
         }
@@ -187,12 +191,12 @@ public class GraphObjectOriented implements Graph {
 
     public Graph clone() {
         GraphObjectOriented clone = new GraphObjectOriented();
-        for (int i = 0; i < getVertexCount(); i++) {
-            clone.addVertex(getPlayer(i));
+        for (Vertex v : vertexs.values()) {
+            clone.addVertex(v.getId(), v.getPlayer());
         }
-        for (Vertex v : this.vertexs) {
+        for (Vertex v : vertexs.values()) {
             for (Edge e : v.getSucc()) {
-                clone.addEdge(v.getIndex(), e.getTarget().getIndex(), e.getCost());
+                clone.addEdge(v.getId(), e.getTarget().getId(), e.getCost());
             }
         }
         return clone;

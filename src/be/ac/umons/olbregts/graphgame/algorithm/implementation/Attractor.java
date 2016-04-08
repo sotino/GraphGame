@@ -13,15 +13,18 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Simon
  */
 public class Attractor implements Algorithm {
 
-    private boolean[] attractor;
+    private Map<String, Boolean> attractor;
     private ReachibilityGame game;
-    private int[] strat;
+    private Map<String, String> strat;
     private boolean ended;
     private int winningPlayer = Graph.PLAYER1;
 
@@ -31,14 +34,12 @@ public class Attractor implements Algorithm {
             throw new IllegalGraphException("The objectif does not match. A ReachibilityGame is needed");
         }
         this.game = (ReachibilityGame) game;
-        attractor = new boolean[game.getGraph().getVertexCount()];
-        strat = new int[attractor.length];
-        for (int i = 0; i < strat.length; i++) {
-            strat[i] = -1;
-        }
+        int n = game.getGraph().getVertexCount();
+        attractor = new HashMap<>(n);
+        strat = new HashMap<>(n);
         ended = false;
-        for (Integer index : this.game.getWiningCondition()) {
-            attractor[index] = true;
+        for (String vertex : game.getGraph().getVertexsId()) {
+            attractor.put(vertex, true);
         }
     }
 
@@ -46,8 +47,20 @@ public class Attractor implements Algorithm {
         this.winningPlayer = winningPlayer;
     }
 
-    public boolean isInWinningRegion(int vertexId) {
-        return attractor[vertexId];
+    @Override
+    public boolean isInWinningRegion(String vertexId) {
+        return attractor.containsKey(vertexId) && attractor.get(vertexId);
+    }
+
+    @Override
+    public String[] getWinningRegion() {
+        java.util.List<String> winningRegion = new ArrayList<>();
+        for (Map.Entry<String, Boolean> attractors : attractor.entrySet()) {
+            if (attractors.getValue()) {
+                winningRegion.add(attractors.getKey());
+            }
+        }
+        return winningRegion.toArray(new String[winningRegion.size()]);
     }
 
     @Override
@@ -65,50 +78,51 @@ public class Attractor implements Algorithm {
     @Override
     public void computeAStep() {
         ended = true;
-        for (int vertexId = 0; vertexId < game.getGraph().getVertexCount(); vertexId++) {
-            if (!attractor[vertexId]) {
-                int[] successor = game.getGraph().getSuccessors(vertexId);
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            if (!isInWinningRegion(vertexId)) {
+                String[] successor = game.getGraph().getSuccessors(vertexId);
                 if (game.getGraph().getPlayer(vertexId) == winningPlayer) {
-                    for (int succId : successor) {
-                        if (attractor[succId]) {
-                            attractor[vertexId] = true;
-                            strat[vertexId] = succId;
+                    for (String succId : successor) {
+                        if (isInWinningRegion(succId)) {
+                            attractor.put(vertexId, true);
+                            strat.put(vertexId, succId);
                             ended = false;
                             break;
                         }
                     }
                 } else {
-                    int escape = -1;
-                    for (int succId : successor) {
-                        if (!attractor[succId]) {
+                    String escape = null;
+                    for (String succId : successor) {
+                        if (!isInWinningRegion(succId)) {
                             escape = succId;
                             break;
                         }
                     }
-                    if (escape == -1) {
-                        attractor[vertexId] = true;
+                    if (escape == null) {
+                        attractor.put(vertexId, true);
                         ended = false;
                         if (game.getGraph().hasSuccessors(vertexId)) {
-                            strat[vertexId] = game.getGraph().getSuccessors(vertexId)[0];
+                            strat.put(vertexId, game.getGraph().getSuccessors(vertexId)[0]);
                         }
                     }
                 }
             }
         }
         if (ended) {
-            for (int i = 0; i < game.getGraph().getVertexCount(); i++) {
-                if (strat[i] < 0) {
-                    if (attractor[i]) {
-                        for (int succId : game.getGraph().getSuccessors(i)) {
-                            if (attractor[succId]) {
-                                strat[i] = succId;
+            for (String vertexId : game.getGraph().getVertexsId()) {
+                //for (int i = 0; i < game.getGraph().getVertexCount(); i++) {
+                if (!strat.containsKey(vertexId)) {
+                    if (isInWinningRegion(vertexId)) {
+                        for (String succId : game.getGraph().getSuccessors(vertexId)) {
+                            if (isInWinningRegion(succId)) {
+                                strat.put(vertexId, succId);
                                 break;
                             }
                         }
                     } else {
-                        for (int succId : game.getGraph().getSuccessors(i)) {
-                            if (!attractor[succId]) {
-                                strat[i] = succId;
+                        for (String succId : game.getGraph().getSuccessors(vertexId)) {
+                            if (!isInWinningRegion(succId)) {
+                                strat.put(vertexId, succId);
                                 break;
                             }
                         }
@@ -119,13 +133,13 @@ public class Attractor implements Algorithm {
     }
 
     @Override
-    public Strategy getStrategy(int vertesId) {
-        return new MemoryLessStrategy(strat[vertesId]);
+    public Strategy getStrategy(String vertexId) {
+        return new MemoryLessStrategy(strat.get(vertexId));
     }
 
     @Override
-    public String getLabel(int vertexId) {
-        if (attractor[vertexId]) {
+    public String getLabel(String vertexId) {
+        if (isInWinningRegion(vertexId)) {
             return "Attr";
         } else {
             return "Not Attr";
@@ -133,9 +147,9 @@ public class Attractor implements Algorithm {
     }
 
     @Override
-    public Color getVertexColor(int vertexId) {
-        for (int target : game.getWiningCondition()) {
-            if (vertexId == target) {
+    public Color getVertexColor(String vertexId) {
+        for (String target : game.getWiningCondition()) {
+            if (vertexId.equals(target)) {
                 return Color.YELLOW;
             }
         }
@@ -143,12 +157,9 @@ public class Attractor implements Algorithm {
     }
 
     @Override
-    public Color getEdgeColor(int originId, int destinationId) {
-        int[] selected = getStrategy(originId).getSelectedEdge();
-        for (int v : selected) {
-            if (v == destinationId) {
-                return Color.GREEN;
-            }
+    public Color getEdgeColor(String srcId, String targetId) {
+        if (targetId.equals(strat.get(srcId))) {
+            return Color.GREEN;
         }
         return null;
     }

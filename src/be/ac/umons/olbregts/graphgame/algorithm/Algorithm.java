@@ -22,14 +22,16 @@ public interface Algorithm {
 
     void computeAStep();
 
-    boolean isInWinningRegion(int vertexId);
+    boolean isInWinningRegion(String vertexId);
 
-    Strategy getStrategy(int index);
+    String[] getWinningRegion();
 
-    String getLabel(int vertexId);
+    Strategy getStrategy(String vertexId);
 
-    Color getVertexColor(int vertexId);
+    String getLabel(String vertexId);
 
-    Color getEdgeColor(int originId, int destinationId);
+    Color getVertexColor(String vertexId);
+
+    Color getEdgeColor(String srcId, String targetId);
 
 }

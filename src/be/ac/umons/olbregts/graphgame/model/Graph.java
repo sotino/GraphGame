@@ -14,33 +14,37 @@ public interface Graph {
 
     int getVertexCount();
 
-    int getPlayer(int vertexId);
+    String[] getVertexsId();
 
-    boolean hasSuccessors(int vertexId);
+    boolean contains(String vertexId);
 
-    int getSuccessorCount(int vertexId);
+    int getPlayer(String vertexId);
 
-    int[] getSuccessors(int vertexId);
+    boolean hasSuccessors(String vertexId);
 
-    int[] getSuccessorsWeight(int vertexId);
+    int getSuccessorCount(String vertexId);
 
-    boolean hasPredecessors(int vertexId);
+    String[] getSuccessors(String vertexId);
 
-    int getPredecessorCount(int vertexId);
+    int[] getSuccessorsWeight(String vertexId);
 
-    int[] getPredecessor(int vertexId);
+    boolean hasPredecessors(String vertexId);
 
-    int[] getPredecessorWeight(int vertexId);
+    int getPredecessorCount(String vertexId);
 
-    int addVertex(int player);
+    String[] getPredecessor(String vertexId);
 
-    void deleteVertex(int vertexId);
+    int[] getPredecessorWeight(String vertexId);
 
-    boolean addEdge(int srcIndex, int targetIndex, int cost);
+    void addVertex(String vertexId, int player);
 
-    void deleteEdge(int sourceId, int destId);
+    void deleteVertex(String vertexId);
 
-    Graph getSubgraph(int[] vertexs);
+    boolean addEdge(String srcId, String targetId, int cost);
+
+    void deleteEdge(String srcId, String targetId);
+
+    Graph getSubgraph(String[] vertexs);
 
     Graph clone();
 }

@@ -8,6 +8,7 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Created by Simon on 19-01-16.
@@ -44,17 +45,27 @@ public class Safety implements Algorithm {
     }
 
     @Override
-    public Strategy getStrategy(int index) {
-        return attractor.getStrategy(index);
+    public Strategy getStrategy(String vertexId) {
+        return attractor.getStrategy(vertexId);
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId) {
+    public boolean isInWinningRegion(String vertexId) {
         return !attractor.isInWinningRegion(vertexId);
     }
 
     @Override
-    public String getLabel(int vertexId) {
+    public String[] getWinningRegion(){
+        java.util.List<String> winningRegion = new ArrayList<>();
+        for(String vertexId:game.getGraph().getVertexsId()){
+            if(isInWinningRegion(vertexId)){
+                winningRegion.add(vertexId);
+            }
+        }
+        return winningRegion.toArray(new String[winningRegion.size()]);
+    }
+    @Override
+    public String getLabel(String vertexId) {
         if (attractor.isInWinningRegion(vertexId)) {
             return "Not Safe";
         } else {
@@ -63,9 +74,9 @@ public class Safety implements Algorithm {
     }
 
     @Override
-    public Color getVertexColor(int vertexId) {
-        for (int target : game.getWiningCondition()) {
-            if (vertexId == target) {
+    public Color getVertexColor(String vertexId) {
+        for (String target : game.getWiningCondition()) {
+            if (vertexId.equals(target)) {
                 return Color.YELLOW;
             }
         }
@@ -73,7 +84,7 @@ public class Safety implements Algorithm {
     }
 
     @Override
-    public Color getEdgeColor(int originId, int destinationId) {
-        return attractor.getEdgeColor(originId, destinationId);
+    public Color getEdgeColor(String srcId, String targetId) {
+        return attractor.getEdgeColor(srcId, targetId);
     }
 }

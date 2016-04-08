@@ -12,26 +12,26 @@ import java.util.List;
  */
 public class Vertex {
 
-    private int index;
+    private String id;
     private int player;
     private ArrayList<Edge> predecessor;
     private ArrayList<Edge> successor;
     private int availableEdge;
 
-    public Vertex(int index, int player) {
-        this.index = index;
+    public Vertex(String id, int player) {
+        this.id = id;
         predecessor = new ArrayList<>();
         successor = new ArrayList<>();
         this.player = player;
         availableEdge = 0;
     }
 
-    public int getIndex() {
-        return index;
+    public String getId() {
+        return id;
     }
 
-    public void setIndex(int index) {
-        this.index = index;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public int getPlayer() {
@@ -108,6 +108,6 @@ public class Vertex {
 
     @Override
     public String toString() {
-        return "[V" + (index + 1) + ']';
+        return "[V" + id + ']';
     }
 }

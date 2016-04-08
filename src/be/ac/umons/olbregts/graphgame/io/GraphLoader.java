@@ -13,7 +13,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.Scanner;
 
@@ -71,7 +71,7 @@ public class GraphLoader {
     public static void saveGraph(GraphObjectOriented graph, String filePath) throws UnsupportedEncodingException, FileNotFoundException {
 
         ArrayList<ArrayList<Edge>> successor = new ArrayList<>();
-        List<Vertex> vertexs = graph.getVertexs();
+        Collection<Vertex> vertexs = graph.getVertexs();
         for (int i = 0; i < vertexs.size(); i++) {
             successor.add(new ArrayList<>());
         }

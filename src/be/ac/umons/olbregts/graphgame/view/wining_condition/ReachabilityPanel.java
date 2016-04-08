@@ -53,7 +53,7 @@ public class ReachabilityPanel extends WinningPanel {
     public Game getDefaultGame(Graph graph) {
         List<Integer> targets = new ArrayList<>(1);
         targets.add(0);
-        return new ReachibilityGame(graph,targets);
+        return new ReachibilityGame(graph, targets);
     }
 
     @Override

@@ -12,12 +12,12 @@ import java.util.List;
 /**
  * @author Simon
  */
-public class ReachibilityGame implements Game<List<Integer>> {
+public class ReachibilityGame implements Game<List<String>> {
 
     private Graph graph;
-    private List<Integer> targetVertexs;
+    private List<String> targetVertexs;
 
-    public ReachibilityGame(Graph graph, List<Integer> targetVertexs) {
+    public ReachibilityGame(Graph graph, List<String> targetVertexs) {
         this.graph = graph;
         this.targetVertexs = targetVertexs;
     }
@@ -28,7 +28,7 @@ public class ReachibilityGame implements Game<List<Integer>> {
     }
 
     @Override
-    public List<Integer> getWiningCondition() {
+    public List<String> getWiningCondition() {
         return targetVertexs;
     }
 

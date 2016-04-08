@@ -9,29 +9,29 @@ package be.ac.umons.olbregts.graphgame.algorithm;
  */
 public class MemoryLessStrategy implements Strategy {
 
-    private int vertexId;
+    private String vertexId;
 
     public MemoryLessStrategy() {
-        vertexId = -1;
+        vertexId = null;
     }
 
-    public MemoryLessStrategy(int vertexId) {
+    public MemoryLessStrategy(String vertexId) {
         this.vertexId = vertexId;
     }
 
     @Override
     public String printChoose() {
-        if (vertexId >= 0) {
-            return "-> " + "[V" + (vertexId + 1) + ']';
+        if (vertexId != null) {
+            return "-> " + "[V" + vertexId + ']';
         } else {
             return "/";
         }
     }
 
     @Override
-    public int[] getSelectedEdge() {
-        int[] choose = new int[(vertexId >= 0 ? 1 : 0)];
-        if (vertexId >= 0) {
+    public String[] getSelectedEdge() {
+        String[] choose = new String[(vertexId != null ? 1 : 0)];
+        if (vertexId != null) {
             choose[0] = vertexId;
         }
         return choose;

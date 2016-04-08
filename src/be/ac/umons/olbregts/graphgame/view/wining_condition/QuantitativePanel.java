@@ -3,11 +3,9 @@ package be.ac.umons.olbregts.graphgame.view.wining_condition;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.QuantitativeGame;
-import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.*;
 
 /**
  * Created by Simon on 26-01-16.
@@ -32,7 +30,7 @@ public class QuantitativePanel extends WinningPanel {
 
     @Override
     public Game getDefaultGame(Graph graph) {
-        return new QuantitativeGame(graph,0);
+        return new QuantitativeGame(graph, 0);
     }
 
     @Override

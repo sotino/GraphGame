@@ -14,7 +14,7 @@ public class WindowingQuantitativeGame extends QuantitativeGame {
         this.windowsSize = windowsSize;
     }
 
-    public int getWindowsSize(){
+    public int getWindowsSize() {
         return windowsSize;
     }
 }

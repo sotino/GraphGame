@@ -8,6 +8,7 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
+import java.util.*;
 
 /**
  * Created by Simon on 21-01-16.
@@ -44,17 +45,28 @@ public class CoBuchi implements Algorithm {
     }
 
     @Override
-    public Strategy getStrategy(int index) {
-        return buchi.getStrategy(index);
+    public Strategy getStrategy(String vertexId) {
+        return buchi.getStrategy(vertexId);
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId) {
+    public boolean isInWinningRegion(String vertexId) {
         return !buchi.isInWinningRegion(vertexId);
     }
 
     @Override
-    public String getLabel(int vertexId) {
+    public String[] getWinningRegion(){
+        java.util.List<String> winningRegion = new ArrayList<>();
+        for(String vertexId:game.getGraph().getVertexsId()){
+            if(isInWinningRegion(vertexId)){
+                winningRegion.add(vertexId);
+            }
+        }
+        return winningRegion.toArray(new String[winningRegion.size()]);
+    }
+
+    @Override
+    public String getLabel(String vertexId) {
         if (buchi.isInWinningRegion(vertexId)) {
             return "Not co buchi";
         } else {
@@ -63,9 +75,9 @@ public class CoBuchi implements Algorithm {
     }
 
     @Override
-    public Color getVertexColor(int vertexId) {
-        for (int target : game.getWiningCondition()) {
-            if (vertexId == target) {
+    public Color getVertexColor(String vertexId) {
+        for (String target : game.getWiningCondition()) {
+            if (vertexId.equals(target)) {
                 return Color.YELLOW;
             }
         }
@@ -73,7 +85,7 @@ public class CoBuchi implements Algorithm {
     }
 
     @Override
-    public Color getEdgeColor(int originId, int destinationId) {
-        return buchi.getEdgeColor(originId, destinationId);
+    public Color getEdgeColor(String srcId, String targetId) {
+        return buchi.getEdgeColor(srcId, targetId);
     }
 }
