@@ -9,14 +9,17 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.QuantitativeGame;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Simon on 26-01-16.
  */
 public class MeanPayoff implements Algorithm {
 
-    private double[] value;
-    private int[] strat;
+    private Map<String,Double> value;
+    private Map<String,String> strat;
     private long k;
     private long kMax;
     private QuantitativeGame game;
@@ -27,24 +30,21 @@ public class MeanPayoff implements Algorithm {
             throw new IllegalGraphException("The objectif does not match. A QuantitativeGame is needed");
         }
         this.game = (QuantitativeGame) game;
-        value = new double[game.getGraph().getVertexCount()];
-        strat = new int[game.getGraph().getVertexCount()];
+        int n = game.getGraph().getVertexCount();
+        value = new HashMap<>(n);
+        strat = new HashMap<>(n);
         int d = Integer.MIN_VALUE;
-        for (int v = 0; v < value.length; v++) {
-            int[] succWeight = game.getGraph().getSuccessorsWeight(v);
+        for(String vertexId : game.getGraph().getVertexsId()){
+            int[] succWeight = game.getGraph().getSuccessorsWeight(vertexId);
             if (succWeight.length < 1) {
-                throw new IllegalGraphException("No dead end allowed. The vertex " + v + " have no successor");
+                throw new IllegalGraphException("No dead end allowed. The vertex " + vertexId + " have no successor");
             }
             for (int w : succWeight) {
-                if (d < Math.abs(w)) {
-                    d = Math.abs(w);
-                }
+                d = Math.max(d,Math.abs(w));
             }
-            value[v] = 0;
-            strat[v] = -1;
+            value.put(vertexId,0.);
         }
         k = 0;
-        int n = game.getGraph().getVertexCount();
         kMax = 4 * d * n * n * n;
     }
 
@@ -62,45 +62,50 @@ public class MeanPayoff implements Algorithm {
 
     @Override
     public void computeAStep() {
-        double[] temp = new double[value.length];
-        for (int v = 0; v < game.getGraph().getVertexCount(); v++) {
-            int[] succ = game.getGraph().getSuccessors(v);
-            int[] succWeight = game.getGraph().getSuccessorsWeight(v);
-            int player = game.getGraph().getPlayer(v);
+        Map<String,Double> temp = new HashMap<>(value.size());
+        for(String vertexId: game.getGraph().getVertexsId()){
+        //for (int v = 0; v < game.getGraph().getVertexCount(); v++) {
+            String[] succ = game.getGraph().getSuccessors(vertexId);
+            int[] succWeight = game.getGraph().getSuccessorsWeight(vertexId);
+            int player = game.getGraph().getPlayer(vertexId);
             double newValue = (player == Graph.PLAYER1 ? Double.NEGATIVE_INFINITY : Double.POSITIVE_INFINITY);
             for (int i = 0; i < succ.length; i++) {
-                double s = succWeight[i] + value[succ[i]];
+                double s = succWeight[i] + value.get(succ[i]);
                 if (player == Graph.PLAYER1) {
                     if (newValue < s) {
                         newValue = s;
-                        strat[v] = succ[i];
+                        strat.put(vertexId,succ[i]);
                     }
                 } else {
                     if (newValue > s) {
                         newValue = s;
-                        strat[v] = succ[i];
+                        strat.put(vertexId,succ[i]);
                     }
                 }
             }
-            temp[v] = newValue;
+            temp.put(vertexId,newValue);
         }
         value = temp;
+        //TODO check if k++ before the is ended and if v=.../k is correct
         k++;
         if (isEnded()) {
             int n = game.getGraph().getVertexCount();
-            for (int i = 0; i < value.length; i++) {
-                double v = value[i] / k;
+            for(Map.Entry<String,Double> valueEntry : value.entrySet()){
+            //for (int i = 0; i < value.length; i++) {
+                double v = valueEntry.getValue() / k;
                 double upperBound = v + (1 * 1. / (2 * n * (n - 1)));
                 double lowerBound = v - (1 * 1. / (2 * n * (n - 1)));
                 for (int l = 1; l <= n; l++) {
                     double t = Math.ceil(v * l) / l;
                     if (lowerBound < t && t < upperBound) {
-                        value[i] = t;
+                        valueEntry.setValue(t);
+                        //value[i] = t;
                         break;
                     }
                     t = Math.floor(v * l) / l;
                     if (lowerBound < t && t < upperBound) {
-                        value[i] = t;
+                        valueEntry.setValue(t);
+                        //value[i] = t;
                         break;
                     }
                 }
@@ -109,34 +114,46 @@ public class MeanPayoff implements Algorithm {
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId) {
-        return value[vertexId] >= game.getWiningCondition();
+    public boolean isInWinningRegion(String vertexId) {
+        return value.get(vertexId) >= game.getWiningCondition();
     }
 
     @Override
-    public Strategy getStrategy(int index) {
-        return new MemoryLessStrategy(strat[index]);
+    public String[] getWinningRegion(){
+        java.util.List<String> winningRegion = new ArrayList<>();
+        for(String vertexId:game.getGraph().getVertexsId()){
+            if(isInWinningRegion(vertexId)){
+                winningRegion.add(vertexId);
+            }
+        }
+        return winningRegion.toArray(new String[winningRegion.size()]);
     }
 
     @Override
-    public String getLabel(int vertexId) {
-        if (value[vertexId] == Long.MAX_VALUE) {
+    public Strategy getStrategy(String vertexId) {
+        return new MemoryLessStrategy(strat.get(vertexId));
+    }
+
+    @Override
+    public String getLabel(String vertexId) {
+        double v = value.get(vertexId);
+        if (v == Long.MAX_VALUE) {
             return "+ inf";
-        } else if (value[vertexId] == Long.MIN_VALUE) {
+        } else if (v == Long.MIN_VALUE) {
             return "- inf";
         } else {
-            return "" + value[vertexId];
+            return "" + v;
         }
     }
 
     @Override
-    public Color getVertexColor(int vertexId) {
+    public Color getVertexColor(String vertexId) {
         return null;
     }
 
     @Override
-    public Color getEdgeColor(int originId, int destinationId) {
-        if (strat[originId] == destinationId) {
+    public Color getEdgeColor(String srcId, String targetId) {
+        if (targetId.equals(strat.get(srcId))) {
             return Color.GREEN;
         }
         return null;

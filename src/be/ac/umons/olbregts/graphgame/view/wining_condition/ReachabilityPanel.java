@@ -28,8 +28,9 @@ public class ReachabilityPanel extends WinningPanel {
         content.add(title);
         JPanel vertexSelection = new JPanel(new FlowLayout(FlowLayout.LEFT));
         vertexSelection.setAlignmentX(Component.LEFT_ALIGNMENT);
-        for (int i = 1; i <= getGraph().getVertexCount(); i++) {
-            JCheckBox box = new JCheckBox("[" + i + "]");
+        for(String vertexId: getGraph().getVertexsId()){
+        //for (int i = 1; i <= getGraph().getVertexCount(); i++) {
+            JCheckBox box = new JCheckBox(vertexId);
             box.setAlignmentX(Component.LEFT_ALIGNMENT);
             vertexs.add(box);
             vertexSelection.add(box);
@@ -40,10 +41,10 @@ public class ReachabilityPanel extends WinningPanel {
 
     @Override
     public Game getGame() {
-        List<Integer> targets = new ArrayList<>();
-        for (int i = 0; i < vertexs.size(); i++) {
-            if (vertexs.get(i).isSelected()) {
-                targets.add(i);
+        List<String> targets = new ArrayList<>();
+        for(JCheckBox checkBox: vertexs){
+            if(checkBox.isSelected()){
+                targets.add(checkBox.getText());
             }
         }
         return new ReachibilityGame(getGraph(), targets);
@@ -51,8 +52,10 @@ public class ReachabilityPanel extends WinningPanel {
 
     @Override
     public Game getDefaultGame(Graph graph) {
-        List<Integer> targets = new ArrayList<>(1);
-        targets.add(0);
+        List<String> targets = new ArrayList<>(1);
+        if(graph.getVertexsId().length != 0){
+            targets.add(graph.getVertexsId()[0]);
+        }
         return new ReachibilityGame(graph, targets);
     }
 

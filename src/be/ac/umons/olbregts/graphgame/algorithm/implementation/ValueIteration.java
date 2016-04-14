@@ -14,18 +14,20 @@ import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGam
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Simon
  */
 public class ValueIteration implements Algorithm {
 
-    private ArrayList<Integer> vertexValues;
-    private int[] mainStrat;
-    private int[] escapeStrat;
+    private Map<String,Integer> vertexValues;
+    private Map<String,String> mainStrat;
+    private Map<String,String> escapeStrat;
     private boolean ended;
     private ReachibilityGame game;
-    private Integer[] targets;
+    private String[] targets;
     private int minBorder;
     private int W;
 
@@ -36,22 +38,22 @@ public class ValueIteration implements Algorithm {
         }
         this.game = (ReachibilityGame) game;
 
-        targets = this.game.getWiningCondition().toArray(new Integer[0]);
+        targets = this.game.getWiningCondition().toArray(new String[0]);
         int vertexCount = game.getGraph().getVertexCount();
-        vertexValues = new ArrayList<>(vertexCount);
-        mainStrat = new int[vertexCount];
-        escapeStrat = new int[vertexCount];
-        for (int i = 0; i < vertexCount; i++) {
-            vertexValues.add(Integer.MAX_VALUE);
-            mainStrat[i] = -1;
-            escapeStrat[i] = -1;
+        vertexValues = new HashMap<>(vertexCount);
+        mainStrat = new HashMap<>(vertexCount);
+        escapeStrat = new HashMap<>(vertexCount);
+        for(String vertexId: game.getGraph().getVertexsId()){
+            vertexValues.put(vertexId,Integer.MAX_VALUE);
+            //mainStrat[i] = -1;
+            //escapeStrat[i] = -1;
         }
-        for (int i : targets) {
-            vertexValues.set(i, 0);
+        for (String t : targets) {
+            vertexValues.put(t, 0);
         }
         W = Integer.MIN_VALUE;
-        for (int i = 0; i < vertexCount; i++) {
-            for (int succWeight : game.getGraph().getSuccessorsWeight(i)) {
+        for(String vertexId:game.getGraph().getVertexsId()){
+            for (int succWeight : game.getGraph().getSuccessorsWeight(vertexId)) {
                 if (Math.abs(succWeight) > W) {
                     W = Math.abs(succWeight);
                 }
@@ -73,9 +75,9 @@ public class ValueIteration implements Algorithm {
         }
     }
 
-    private boolean isTarget(int vertexId) {
-        for (int target : targets) {
-            if (target == vertexId)
+    private boolean isTarget(String vertexId) {
+        for (String target : targets) {
+            if (target.equals(vertexId))
                 return true;
         }
         return false;
@@ -84,14 +86,15 @@ public class ValueIteration implements Algorithm {
     @Override
     public void computeAStep() {
         ended = true;
-        ArrayList<Integer> previous = clonePreviousResult();
-        for (int v = 0; v < game.getGraph().getVertexCount(); v++) {
-            if (!isTarget(v)) {
-                if (game.getGraph().getPlayer(v) == Graph.PLAYER1) {
+        Map<String,Integer> previous = clonePreviousResult();
+        for(String vertexId: game.getGraph().getVertexsId()){
+        //for (int v = 0; v < game.getGraph().getVertexCount(); v++) {
+            if (!isTarget(vertexId)) {
+                if (game.getGraph().getPlayer(vertexId) == Graph.PLAYER1) {
                     int min = Integer.MAX_VALUE;
-                    int argMin = -1;
-                    int[] succ = game.getGraph().getSuccessors(v);
-                    int[] succWeight = game.getGraph().getSuccessorsWeight(v);
+                    String argMin = null;
+                    String[] succ = game.getGraph().getSuccessors(vertexId);
+                    int[] succWeight = game.getGraph().getSuccessorsWeight(vertexId);
                     for (int i = 0; i < succ.length; i++) {
                         int succValue = add(previous.get(succ[i]), succWeight[i]);
                         if (succValue < min) {
@@ -99,20 +102,22 @@ public class ValueIteration implements Algorithm {
                             argMin = succ[i];
                         }
                     }
-                    vertexValues.set(v, min);
-                    if (!vertexValues.get(v).equals(previous.get(v))) {
+                    vertexValues.put(vertexId, min);
+                    if (!vertexValues.get(vertexId).equals(previous.get(vertexId))) {
                         ended = false;
-                        mainStrat[v] = argMin;
-                        if (previous.get(v) == Integer.MAX_VALUE) {
-                            escapeStrat[v] = argMin;
+                        mainStrat.put(vertexId,argMin);
+                        //mainStrat[v] = argMin;
+                        if (previous.get(vertexId) == Integer.MAX_VALUE) {
+                            escapeStrat.put(vertexId,argMin);
+                            //escapeStrat[v] = argMin;
                         }
                     }
                 } else {
                     int max = Integer.MIN_VALUE;
-                    int argMax = -1;
+                    String argMax = null;
 
-                    int[] succ = game.getGraph().getSuccessors(v);
-                    int[] succWeight = game.getGraph().getSuccessorsWeight(v);
+                    String[] succ = game.getGraph().getSuccessors(vertexId);
+                    int[] succWeight = game.getGraph().getSuccessorsWeight(vertexId);
                     for (int i = 0; i < succ.length; i++) {
                         int succValue = add(previous.get(succ[i]), succWeight[i]);
                         if (succValue > max) {
@@ -120,14 +125,15 @@ public class ValueIteration implements Algorithm {
                             argMax = succ[i];
                         }
                     }
-                    vertexValues.set(v, max);
-                    if (!vertexValues.get(v).equals(previous.get(v))) {
+                    vertexValues.put(vertexId, max);
+                    if (!vertexValues.get(vertexId).equals(previous.get(vertexId))) {
                         ended = false;
-                        mainStrat[v] = argMax;
+                        mainStrat.put(vertexId,argMax);
+                        //mainStrat[v] = argMax;
                     }
                 }
-                if (vertexValues.get(v) < minBorder) {
-                    vertexValues.set(v, Integer.MIN_VALUE);
+                if (vertexValues.get(vertexId) < minBorder) {
+                    vertexValues.put(vertexId, Integer.MIN_VALUE);
                 }
             }
         }
@@ -137,21 +143,32 @@ public class ValueIteration implements Algorithm {
     }
 
     @Override
-    public Strategy getStrategy(int index) {
+    public Strategy getStrategy(String vertexId) {
         int distance = Integer.MAX_VALUE;
-        if (escapeStrat[index] != -1) {
-            distance = vertexValues.get(index) - (game.getGraph().getVertexCount() - 1) * W;
+        if (escapeStrat.get(vertexId) != null) {
+            distance = vertexValues.get(vertexId) - (game.getGraph().getVertexCount() - 1) * W;
         }
-        return new EscapeStrategy(mainStrat[index], escapeStrat[index], distance);
+        return new EscapeStrategy(mainStrat.get(vertexId), escapeStrat.get(vertexId), distance);
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId) {
+    public boolean isInWinningRegion(String vertexId) {
         return (vertexValues.get(vertexId) != Integer.MAX_VALUE && vertexValues.get(vertexId) != Integer.MIN_VALUE);
     }
 
     @Override
-    public String getLabel(int vertexId) {
+    public String[] getWinningRegion(){
+        java.util.List<String> winningRegion = new ArrayList<>();
+        for(String vertexId:game.getGraph().getVertexsId()){
+            if(isInWinningRegion(vertexId)){
+                winningRegion.add(vertexId);
+            }
+        }
+        return winningRegion.toArray(new String[winningRegion.size()]);
+    }
+
+    @Override
+    public String getLabel(String vertexId) {
         int value = vertexValues.get(vertexId);
         if (value == Integer.MAX_VALUE) {
             return "+ inf";
@@ -163,9 +180,9 @@ public class ValueIteration implements Algorithm {
     }
 
     @Override
-    public Color getVertexColor(int vertexId) {
-        for (int target : game.getWiningCondition()) {
-            if (vertexId == target) {
+    public Color getVertexColor(String vertexId) {
+        for (String target : game.getWiningCondition()) {
+            if (vertexId.equals(target)) {
                 return Color.YELLOW;
             }
         }
@@ -173,21 +190,21 @@ public class ValueIteration implements Algorithm {
     }
 
     @Override
-    public Color getEdgeColor(int originId, int destinationId) {
-        EscapeStrategy strategy = (EscapeStrategy) getStrategy(originId);
-        if (destinationId == strategy.getMainChoose()) {
+    public Color getEdgeColor(String srcId, String targetId) {
+        EscapeStrategy strategy = (EscapeStrategy) getStrategy(srcId);
+        if (targetId.equals(strategy.getMainChoose())) {
             return Color.GREEN;
         }
-        if (destinationId == strategy.getEscapeChoose()) {
+        if (targetId.equals(strategy.getEscapeChoose())) {
             return Color.GREEN.darker();
         }
         return null;
     }
 
-    private ArrayList<Integer> clonePreviousResult() {
-        ArrayList<Integer> clone = new ArrayList<>(vertexValues.size());
-        for (int i : vertexValues) {
-            clone.add(i);
+    private Map<String,Integer> clonePreviousResult() {
+        Map<String,Integer> clone = new HashMap<>(vertexValues.size());
+        for (Map.Entry<String,Integer> entry:vertexValues.entrySet()) {
+            clone.put(entry.getKey(),entry.getValue());
         }
         return clone;
     }
@@ -197,11 +214,11 @@ public class ValueIteration implements Algorithm {
             Attractor attractor = new Attractor();
             attractor.reset(game);
             attractor.compute();
-            for (int i = 0; i < mainStrat.length; i++) {
-                if (mainStrat[i] == -1) {
-                    int[] attrStrat = attractor.getStrategy(i).getSelectedEdge();
+            for(String vertexId:game.getGraph().getVertexsId()){
+                if(!mainStrat.containsKey(vertexId)){
+                    String[] attrStrat = attractor.getStrategy(vertexId).getSelectedEdge();
                     if (attrStrat.length >= 1) {
-                        mainStrat[i] = attrStrat[0];
+                        mainStrat.put(vertexId, attrStrat[0]);
                     }
                 }
             }

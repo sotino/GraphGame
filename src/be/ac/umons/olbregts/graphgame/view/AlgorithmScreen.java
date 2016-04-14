@@ -236,7 +236,7 @@ public class AlgorithmScreen extends JPanel {
     }
 
     public void updateGraph() {
-        graphPanel.updateGraph(algorithm);
+        graphPanel.setAlgorithm(algorithm);
     }
 
     public void resetGraph() {

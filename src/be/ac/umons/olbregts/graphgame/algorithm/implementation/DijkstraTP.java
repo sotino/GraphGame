@@ -16,6 +16,8 @@ import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGam
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Simon
@@ -23,18 +25,18 @@ import java.util.ArrayList;
 public class DijkstraTP implements Algorithm {
 
     private ReachibilityGame game;
-    private Integer[] targets;
-    private int lastSelected;
+    private String[] targets;
+    private String lastSelected;
     // The heap Q that contains the fixed element not yet proccessed
     private Heap<QVertex> q;
     // Allow direct acces to a element of Q
-    private ArrayList<QVertex> qElements;
+    private Map<String,QVertex> qElements;
     // The heap of each vertex. Allow to know the actual distance to targets.
-    private ArrayList<Heap<VertexHeapElement>> vertexsHeap;
+    private Map<String,Heap<VertexHeapElement>> vertexsHeap;
     // Save the number of edge available for each vertex
-    private ArrayList<Integer> availableEdges;
+    private Map<String,Integer> availableEdges;
     // Save the bocked edges
-    private ArrayList<ArrayList<Integer>> blockedEdge;
+    private Map<String,ArrayList<String>> blockedEdge;
 
     @Override
     public void reset(Game game) throws IllegalGraphException {
@@ -45,8 +47,8 @@ public class DijkstraTP implements Algorithm {
             throw new IllegalGraphException("The cost on edge can't be negative");
         }
         this.game = (ReachibilityGame) game;
-        this.targets = this.game.getWiningCondition().toArray(new Integer[0]);
-        lastSelected = -1;
+        this.targets = this.game.getWiningCondition().toArray(new String[0]);
+        lastSelected = null;
         initializeTP();
         initHeapTP();
     }
@@ -73,7 +75,7 @@ public class DijkstraTP implements Algorithm {
             } else {
                 if (game.getGraph().getPlayer(u.vertexId) == Graph.PLAYER1 || availableEdges.get(u.vertexId) == 1) {
                     q.extractMin();
-                    int[] preds = game.getGraph().getPredecessor(u.vertexId);
+                    String[] preds = game.getGraph().getPredecessor(u.vertexId);
                     int[] predsWeight = game.getGraph().getPredecessorWeight(u.vertexId);
                     for (int i = 0; i < preds.length; i++) {
                         relaxTP(preds[i], predsWeight[i], u);
@@ -86,13 +88,13 @@ public class DijkstraTP implements Algorithm {
     }
 
     @Override
-    public Strategy getStrategy(int index) {
-        Heap<VertexHeapElement> heap = vertexsHeap.get(index);
-        int choose = -1;
+    public Strategy getStrategy(String vertexId) {
+        Heap<VertexHeapElement> heap = vertexsHeap.get(vertexId);
+        String choose = null;
         if (heap.isEmpty()) {
-            ArrayList<Integer> blocked = blockedEdge.get(index);
+            ArrayList<String> blocked = blockedEdge.get(vertexId);
             if (isEnded() || !blocked.isEmpty()) {
-                for (int succ : game.getGraph().getSuccessors(index)) {
+                for (String succ : game.getGraph().getSuccessors(vertexId)) {
                     if (!blocked.contains(succ)) {
                         choose = succ;
                     }
@@ -105,13 +107,24 @@ public class DijkstraTP implements Algorithm {
     }
 
     @Override
-    public boolean isInWinningRegion(int vertexId) {
+    public boolean isInWinningRegion(String vertexId) {
         Heap<VertexHeapElement> heap = vertexsHeap.get(vertexId);
         return !heap.isEmpty() && !(heap.peek().distance == Integer.MAX_VALUE);
     }
 
     @Override
-    public String getLabel(int vertexId) {
+    public String[] getWinningRegion(){
+        java.util.List<String> winningRegion = new ArrayList<>();
+        for(String vertexId:game.getGraph().getVertexsId()){
+            if(isInWinningRegion(vertexId)){
+                winningRegion.add(vertexId);
+            }
+        }
+        return winningRegion.toArray(new String[winningRegion.size()]);
+    }
+
+    @Override
+    public String getLabel(String vertexId) {
         Heap<VertexHeapElement> heap = vertexsHeap.get(vertexId);
         if (heap.isEmpty()) {
             return "+ inf";
@@ -124,11 +137,11 @@ public class DijkstraTP implements Algorithm {
     }
 
     @Override
-    public Color getVertexColor(int vertexId) {
-        if (vertexId == lastSelected && !isEnded())
+    public Color getVertexColor(String vertexId) {
+        if (vertexId.equals(lastSelected) && !isEnded())
             return Color.CYAN;
-        for (int target : game.getWiningCondition()) {
-            if (vertexId == target) {
+        for (String target : game.getWiningCondition()) {
+            if (vertexId.equals(target)) {
                 return Color.YELLOW;
             }
         }
@@ -136,15 +149,15 @@ public class DijkstraTP implements Algorithm {
     }
 
     @Override
-    public Color getEdgeColor(int originId, int destinationId) {
-        for (int d : blockedEdge.get(originId)) {
-            if (d == destinationId) {
+    public Color getEdgeColor(String srcId, String targetId) {
+        for (String d : blockedEdge.get(srcId)) {
+            if (d.equals(targetId)) {
                 return Color.RED;
             }
         }
-        Strategy strategy = getStrategy(originId);
-        for (int d : strategy.getSelectedEdge()) {
-            if (destinationId == d) {
+        Strategy strategy = getStrategy(srcId);
+        for (String d : strategy.getSelectedEdge()) {
+            if (d.equals(targetId)) {
                 return Color.GREEN;
             }
         }
@@ -153,22 +166,22 @@ public class DijkstraTP implements Algorithm {
 
     private void initializeTP() {
         int vertexCount = game.getGraph().getVertexCount();
-        vertexsHeap = new ArrayList<>(vertexCount);
-        availableEdges = new ArrayList<>(vertexCount);
-        blockedEdge = new ArrayList<>(vertexCount);
-        for (int i = 0; i < vertexCount; i++) {
-            vertexsHeap.add(new Heap<>());
-            availableEdges.add(game.getGraph().getSuccessorCount(i));
-            blockedEdge.add(new ArrayList<>());
+        vertexsHeap = new HashMap<>(vertexCount);
+        availableEdges = new HashMap<>(vertexCount);
+        blockedEdge = new HashMap<>(vertexCount);
+        for(String vertexId:game.getGraph().getVertexsId()){
+            vertexsHeap.put(vertexId,new Heap<>());
+            availableEdges.put(vertexId,game.getGraph().getSuccessorCount(vertexId));
+            blockedEdge.put(vertexId,new ArrayList<>());
         }
-        for (int target : targets) {
-            vertexsHeap.get(target).insert(new VertexHeapElement(0, -1));
+        for (String target : targets) {
+            vertexsHeap.get(target).insert(new VertexHeapElement(0, null));
         }
     }
 
-    private boolean isTarget(int vertexId) {
-        for (int i : targets) {
-            if (i == vertexId)
+    private boolean isTarget(String vertexId) {
+        for (String i : targets) {
+            if (i.equals(vertexId))
                 return true;
         }
         return false;
@@ -176,26 +189,27 @@ public class DijkstraTP implements Algorithm {
 
     private void initHeapTP() {
         int vertexCount = game.getGraph().getVertexCount();
-        qElements = new ArrayList<>(vertexCount);
+        qElements = new HashMap<>(vertexCount);
         q = new Heap<>();
         QVertex[] v = new QVertex[vertexCount];
         int targetPointer = 0;
         int otherPointer = targets.length;
-        for (int i = 0; i < vertexCount; i++) {
-            if (isTarget(i)) {
-                v[targetPointer] = new QVertex(i);
-                qElements.add(i, v[targetPointer]);
+        for(String vertexId:game.getGraph().getVertexsId()){
+        //for (int i = 0; i < vertexCount; i++) {
+            if (isTarget(vertexId)) {
+                v[targetPointer] = new QVertex(vertexId);
+                qElements.put(vertexId, v[targetPointer]);
                 targetPointer++;
             } else {
-                v[otherPointer] = new QVertex(i);
-                qElements.add(i, v[otherPointer]);
+                v[otherPointer] = new QVertex(vertexId);
+                qElements.put(vertexId, v[otherPointer]);
                 otherPointer++;
             }
         }
         q.initialize(v);
     }
 
-    private void relaxTP(int pred, int edgeCost, QVertex u) {
+    private void relaxTP(String pred, int edgeCost, QVertex u) {
         int cost = edgeCost + u.lireMin();
         vertexsHeap.get(pred).insert(new VertexHeapElement(cost, u.vertexId));
         QVertex predInQ = qElements.get(pred);
@@ -204,16 +218,16 @@ public class DijkstraTP implements Algorithm {
         }
     }
 
-    private void block(int uIndex) {
-        availableEdges.set(uIndex, availableEdges.get(uIndex) - 1);
-        int succRemoved = vertexsHeap.get(uIndex).extractMin().succ;
+    private void block(String uIndex) {
+        availableEdges.put(uIndex, availableEdges.get(uIndex) - 1);
+        String succRemoved = vertexsHeap.get(uIndex).extractMin().succ;
         blockedEdge.get(uIndex).add(succRemoved);
         q.heapify(0);
     }
 
     private boolean isValid(Game game) {
-        for (int i = 0; i < game.getGraph().getVertexCount(); i++) {
-            for (int w : game.getGraph().getSuccessorsWeight(i)) {
+        for(String vertexId: game.getGraph().getVertexsId()){
+            for (int w : game.getGraph().getSuccessorsWeight(vertexId)) {
                 if (w < 0)
                     return false;
             }
@@ -223,10 +237,10 @@ public class DijkstraTP implements Algorithm {
 
     private class QVertex implements HeapElement<QVertex> {
 
-        private int vertexId;
+        private String vertexId;
         private int heapIndex;
 
-        public QVertex(int vertexId) {
+        public QVertex(String vertexId) {
             this.vertexId = vertexId;
         }
 
@@ -263,9 +277,9 @@ public class DijkstraTP implements Algorithm {
 
         private int heapIndex;
         private int distance;
-        private int succ;
+        private String succ;
 
-        public VertexHeapElement(int distance, int succ) {
+        public VertexHeapElement(int distance, String succ) {
             this.distance = distance;
             this.succ = succ;
         }

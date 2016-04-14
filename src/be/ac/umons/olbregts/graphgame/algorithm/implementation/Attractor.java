@@ -38,7 +38,7 @@ public class Attractor implements Algorithm {
         attractor = new HashMap<>(n);
         strat = new HashMap<>(n);
         ended = false;
-        for (String vertex : game.getGraph().getVertexsId()) {
+        for (String vertex : this.game.getWiningCondition()) {
             attractor.put(vertex, true);
         }
     }
@@ -49,7 +49,8 @@ public class Attractor implements Algorithm {
 
     @Override
     public boolean isInWinningRegion(String vertexId) {
-        return attractor.containsKey(vertexId) && attractor.get(vertexId);
+        boolean winning = attractor.containsKey(vertexId) && attractor.get(vertexId);
+        return winning;
     }
 
     @Override

@@ -25,12 +25,12 @@ public class GraphObjectOriented implements Graph {
         vertexs = new HashMap<>(head.size() - 1);
         for (int i = 0; i < head.size() - 1; i++) {
             int p = player.get(i) == 0 ? 1 : player.get(i);
-            Vertex v = new Vertex("" + i, p);
-            vertexs.put("" + i, v);
+            Vertex v = new Vertex("V" + i, p);
+            vertexs.put("V" + i, v);
         }
         for (int i = 0; i < head.size() - 1; i++) {
             for (int j = head.get(i) - 1; j < head.get(i + 1) - 1; j++) {
-                Edge e = new Edge(vertexs.get("" + i), vertexs.get("" + (succ.get(j) - 1)), cost.get(j));
+                Edge e = new Edge(vertexs.get("V" + i), vertexs.get("V" + (succ.get(j) - 1)), cost.get(j));
                 e.getTarget().addPred(e);
                 e.getSource().addSucc(e);
             }

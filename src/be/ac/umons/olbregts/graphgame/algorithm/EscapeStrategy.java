@@ -9,16 +9,16 @@ package be.ac.umons.olbregts.graphgame.algorithm;
  */
 public class EscapeStrategy implements Strategy {
 
-    private int mainChoose;
-    private int escapeChoose;
+    private String mainChoose;
+    private String escapeChoose;
     private int limitStep;
 
-    public EscapeStrategy(int mainChoose) {
+    public EscapeStrategy(String mainChoose) {
         this.mainChoose = mainChoose;
-        escapeChoose = -1;
+        escapeChoose = null;
     }
 
-    public EscapeStrategy(int mainChoose, int escapeChoose, int limitStep) {
+    public EscapeStrategy(String mainChoose, String escapeChoose, int limitStep) {
         this.mainChoose = mainChoose;
         this.escapeChoose = escapeChoose;
         this.limitStep = limitStep;
@@ -27,39 +27,39 @@ public class EscapeStrategy implements Strategy {
     @Override
     public String printChoose() {
         String strat = "/";
-        if (mainChoose != -1) {
-            strat = "-> " + "[V" + (mainChoose + 1) + ']';
+        if (mainChoose != null) {
+            strat = "-> " + "[V" + mainChoose + ']';
         }
-        if (escapeChoose != -1) {
-            strat += " at cost " + limitStep + " -> " + "[V" + (escapeChoose + 1) + ']';
+        if (escapeChoose != null) {
+            strat += " at cost " + limitStep + " -> " + "[V" + escapeChoose  + ']';
         }
         return strat;
     }
 
     @Override
-    public int[] getSelectedEdge() {
+    public String[] getSelectedEdge() {
         int nbEdge = 0;
-        if (mainChoose != -1) {
+        if (mainChoose != null) {
             nbEdge++;
-            if (escapeChoose != -1 && escapeChoose != mainChoose) {
+            if (escapeChoose != null && !escapeChoose.equals(mainChoose)) {
                 nbEdge++;
             }
         }
-        int[] choose = new int[nbEdge];
-        if (mainChoose != -1) {
+        String[] choose = new String[nbEdge];
+        if (mainChoose != null) {
             choose[0] = mainChoose;
-            if (escapeChoose != -1 && escapeChoose != mainChoose) {
+            if (escapeChoose != null && !escapeChoose.equals(mainChoose)) {
                 choose[1] = escapeChoose;
             }
         }
         return choose;
     }
 
-    public int getMainChoose() {
+    public String getMainChoose() {
         return mainChoose;
     }
 
-    public int getEscapeChoose() {
+    public String getEscapeChoose() {
         return escapeChoose;
     }
 

@@ -9,10 +9,8 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Simon on 19-01-16.
@@ -67,7 +65,12 @@ public class Buchi implements Algorithm {
             attr.reset(attrGame);
             attr.setWinningPlayer(winningPlayer);
             attr.compute();
-            List<String> trapTargets = Arrays.asList(attr.getWinningRegion());
+            List<String> trapTargets =new ArrayList<>();
+            for(String vertexId: g.getVertexsId()){
+                if(! attr.isInWinningRegion(vertexId)){
+                    trapTargets.add(vertexId);
+                }
+            }
 
             ReachibilityGame trapGame = new ReachibilityGame(g, trapTargets);
             Attractor trap = new Attractor();
