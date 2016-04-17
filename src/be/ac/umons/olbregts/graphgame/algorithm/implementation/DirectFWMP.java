@@ -38,6 +38,7 @@ public class DirectFWMP implements Algorithm {
         winGW = new ArrayList<>(g.getVertexCount());
         removedStrat = new HashMap<>(g.getVertexCount());
         removedLabel = new HashMap<>(g.getVertexCount());
+        goodWin = null;
     }
 
     @Override
