@@ -5,6 +5,7 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,24 +19,26 @@ public class ReachabilityPanel extends WinningPanel {
 
     @Override
     public void initUI() {
+        removeAll();
         vertexs = new ArrayList<>();
         setLayout(new BorderLayout());
+
         JPanel content = new JPanel();
         content.setLayout(new BoxLayout(content, BoxLayout.Y_AXIS));
         JLabel title = new JLabel("Choose the targets:");
         title.setAlignmentX(Component.LEFT_ALIGNMENT);
-        title.setBackground(Color.YELLOW);
         content.add(title);
-        JPanel vertexSelection = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel vertexSelection = new JPanel();
+        vertexSelection.setLayout(new BoxLayout(vertexSelection,BoxLayout.X_AXIS));
         vertexSelection.setAlignmentX(Component.LEFT_ALIGNMENT);
         for(String vertexId: getGraph().getVertexsId()){
-        //for (int i = 1; i <= getGraph().getVertexCount(); i++) {
             JCheckBox box = new JCheckBox(vertexId);
             box.setAlignmentX(Component.LEFT_ALIGNMENT);
             vertexs.add(box);
             vertexSelection.add(box);
         }
-        content.add(vertexSelection);
+        JScrollPane scrollPane = new JScrollPane(vertexSelection,ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        content.add(scrollPane);
         add(content, BorderLayout.CENTER);
     }
 

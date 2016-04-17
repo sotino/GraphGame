@@ -16,6 +16,7 @@ public class QuantitativePanel extends WinningPanel {
 
     @Override
     public void initUI() {
+        removeAll();
         setLayout(new BorderLayout());
         SpinnerNumberModel model = new SpinnerNumberModel();
         model.setValue(0);

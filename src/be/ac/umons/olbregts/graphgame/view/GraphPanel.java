@@ -7,8 +7,8 @@ package be.ac.umons.olbregts.graphgame.view;
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
+import com.mxgraph.layout.*;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
-import com.mxgraph.layout.mxIGraphLayout;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
@@ -18,19 +18,22 @@ import com.mxgraph.view.mxCellState;
 import com.mxgraph.view.mxGraph;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 /**
  * @author Simon
  */
-public class GraphPanel extends mxGraphComponent {
+public class GraphPanel extends JPanel { //mxGraphComponent {
 
     private static final String P1_STYLE = "shape=ellipse";
     private static final String P2_STYLE = "defaultVertex";
-    //private ArrayList<Object> vertexsView;
     private Graph model;
     private Algorithm algorithm;
+    private mxGraphComponent graphComponent;
 
     public GraphPanel() {
         this(new GraphObjectOriented());
@@ -41,16 +44,48 @@ public class GraphPanel extends mxGraphComponent {
     }
 
     public GraphPanel(Graph model, Algorithm algorithm) {
-        super(new mxGraph());
+        setLayout(new BorderLayout());
+        JPanel controlPanel = new JPanel(new BorderLayout());
+
+        JPanel layoutPanel = new JPanel(new BorderLayout());
+        JButton applyLayout = new JButton("Apply");
+        layoutPanel.add(applyLayout, BorderLayout.EAST);
+        JComboBox<Layouts> layoutCB = new JComboBox<>(Layouts.values());
+        layoutPanel.add(layoutCB,BorderLayout.CENTER);
+        applyLayout.addActionListener(e -> {
+            Layouts selected = (Layouts) layoutCB.getSelectedItem();
+            applyLayout(selected);
+        });
+        layoutCB.setSelectedItem(Layouts.FAST_ORGANIC);
+        controlPanel.add(layoutPanel,BorderLayout.WEST);
+
+        JPanel zoomPanel = new JPanel(new FlowLayout());
+        zoomPanel.add(new JLabel("Zoom:"));
+        JButton zoomIn = new JButton("IN");
+        zoomIn.addActionListener(e -> {
+            graphComponent.zoomIn();
+        });
+        zoomPanel.add(zoomIn);
+        JButton zoomOut = new JButton("OUT");
+        zoomOut.addActionListener(e -> {
+            graphComponent.zoomOut();
+        });
+        zoomPanel.add(zoomOut);
+        controlPanel.add(zoomPanel,BorderLayout.EAST);
+        add(controlPanel,BorderLayout.SOUTH);
+
+        graphComponent = new mxGraphComponent(new mxGraph());
+        add(graphComponent,BorderLayout.CENTER);
         this.model = model;
         this.algorithm = algorithm;
-        getViewport().setOpaque(true);
-        getViewport().setBackground(Color.WHITE);
+        graphComponent.getViewport().setOpaque(true);
+        graphComponent.getViewport().setBackground(Color.WHITE);
         //vertexsView = new ArrayList<>();
-        graph.setAllowDanglingEdges(false);
+        graphComponent.getGraph().setAllowDanglingEdges(false);
         setEditable(false);
         displayGraph();
-        getConnectionHandler().addListener(mxEvent.CONNECT, (sender, evt) -> {
+        applyLayout(Layouts.FAST_ORGANIC);
+        graphComponent.getConnectionHandler().addListener(mxEvent.CONNECT, (sender, evt) -> {
             boolean edgeAdded = false;
             mxCell edge = (mxCell) evt.getProperty("cell");
             if (edge.getTarget().isVertex()) {
@@ -77,61 +112,59 @@ public class GraphPanel extends mxGraphComponent {
             }
             if (!edgeAdded) {
                 Object[] cells = {edge};
-                graph.removeCells(cells);
+                graphComponent.getGraph().removeCells(cells);
             }
         });
     }
 
     public void setEditable(boolean editable) {
-        graph.setCellsLocked(!editable);
-        graph.setCellsSelectable(editable);
-        graph.setEnabled(!editable);
-        graph.setConnectableEdges(editable);
-        setConnectable(editable);
-    }
-
-    public void resetView() {
-        displayGraph();
+        //graphComponent.getGraph().setCellsLocked(!editable);
+        graphComponent.getGraph().setCellsSelectable(editable);
+        graphComponent.getGraph().setEnabled(!editable);
+        graphComponent.getGraph().setConnectableEdges(editable);
+        graphComponent.setConnectable(editable);
     }
 
     public void updateGraph() {
-        displayGraph();
-        /*
-        graph.getModel().beginUpdate();
+        graphComponent.getGraph().getModel().beginUpdate();
         for(String vertexId: model.getVertexsId()){
             updateVertexColor(vertexId);
             if(algorithm != null) {
                 changeLabel(vertexId, algorithm.getLabel(vertexId));
                 for (String succId : model.getSuccessors(vertexId)) {
                     Color color = algorithm.getEdgeColor(vertexId, succId);
-                    if (color != null) {
-                        changeEdgeColor(vertexId, succId, colorToHex(color));
-                    }
+                    changeEdgeColor(vertexId, succId, color);
                 }
             }
         }
-        graph.getModel().endUpdate();
-        graph.repaint();*/
+        graphComponent.getGraph().getModel().endUpdate();
+        graphComponent.getGraph().repaint();
     }
 
-    private void changeEdgeColor(String srcId, String targetId, String color) {
-        Object[] edges = graph.getEdgesBetween(getVertexView(srcId), getVertexView(targetId), true);
-        graph.setCellStyles(mxConstants.STYLE_STROKECOLOR, color, edges);
-        String size = color.equals("black") ? "1" : "5";
-        graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, size, edges);
+    private void changeEdgeColor(String srcId, String targetId, Color color) {
+        String hexColor;
+        if(color == null){
+            hexColor = "#6482B9";
+        }else {
+            hexColor = colorToHex(color);
+        }
+        Object[] edges = graphComponent.getGraph().getEdgesBetween(getVertexView(srcId), getVertexView(targetId), true);
+        graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKECOLOR, hexColor, edges);
+        String size = color == null ? "1" : "5";
+        graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKEWIDTH, size, edges);
     }
 
     private void changeLabel(String vertexId, String label) {
-        mxCellState state = graph.getView().getState(getVertexView(vertexId));
+        mxCellState state = graphComponent.getGraph().getView().getState(getVertexView(vertexId));
         state.setLabel(vertexId+" "+label);
     }
 
     private void displayGraph() {
-        Object parent = graph.getDefaultParent();
-        graph.getModel().beginUpdate();
+        Object parent = graphComponent.getGraph().getDefaultParent();
+        graphComponent.getGraph().getModel().beginUpdate();
         try {
-            graph.removeCells(graph.getChildVertices(graph.getDefaultParent()));
-            graph.refresh();
+            graphComponent.getGraph().removeCells(graphComponent.getGraph().getChildVertices(graphComponent.getGraph().getDefaultParent()));
+            graphComponent.getGraph().refresh();
             int nbNodes = model.getVertexCount();
             for (String vertexId : model.getVertexsId()) {
                 addVertexView(vertexId);
@@ -143,19 +176,17 @@ public class GraphPanel extends mxGraphComponent {
                 for (int vIndex = 0; vIndex < succ.length; vIndex++) {
                     String succId = succ[vIndex];
                     String label = "" + succW[vIndex];
-                    graph.insertEdge(parent, null, label, getVertexView(vertexId), getVertexView(succId), "labelBackgroundColor=white");
+                    graphComponent.getGraph().insertEdge(parent, null, label, getVertexView(vertexId), getVertexView(succId), "labelBackgroundColor=white");
                     if (algorithm != null) {
                         Color color = algorithm.getEdgeColor(vertexId, succId);
-                        if (color != null) {
-                            changeEdgeColor(vertexId, succId, colorToHex(color));
-                        }
+                        changeEdgeColor(vertexId, succId, color);
                     }
                 }
             }
-            applyLayout();
         } finally {
-            graph.getModel().endUpdate();
+            graphComponent.getGraph().getModel().endUpdate();
         }
+        graphComponent.getGraph().repaint();
     }
 
     public final void addVertex(int player) {
@@ -165,11 +196,11 @@ public class GraphPanel extends mxGraphComponent {
     }
 
     private mxCell getVertexView(String vertexId) {
-        return (mxCell) ((mxGraphModel) graph.getModel()).getCell(vertexId);
+        return (mxCell) ((mxGraphModel) graphComponent.getGraph().getModel()).getCell(vertexId);
     }
 
     private void addVertexView(String vertexId) {
-        Object parent = graph.getDefaultParent();
+        Object parent = graphComponent.getGraph().getDefaultParent();
         String label = "[" + vertexId + "]";
         if (algorithm != null) {
             String algLabel = algorithm.getLabel(vertexId);
@@ -178,10 +209,10 @@ public class GraphPanel extends mxGraphComponent {
             }
         }
         if (model.getPlayer(vertexId) == Graph.PLAYER1) {
-            graph.insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P1_STYLE);
+            graphComponent.getGraph().insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P1_STYLE);
             //vertexsView.add(vertexId, graph.insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P1_STYLE));
         } else {
-            graph.insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P2_STYLE);
+            graphComponent.getGraph().insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P2_STYLE);
             //vertexsView.add(vertexId, graph.insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P2_STYLE));
         }
         mxCell c = getVertexView(vertexId);
@@ -194,17 +225,19 @@ public class GraphPanel extends mxGraphComponent {
             Color color = algorithm.getVertexColor(vertexId);
             Object[] o = {getVertexView(vertexId)};
             if (color != null) {
-                graph.setCellStyles(mxConstants.STYLE_FILLCOLOR, colorToHex(color), o);
+                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_FILLCOLOR, colorToHex(color), o);
+            }else{
+                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_FILLCOLOR,"#C3D9FF" , o);
             }
             if (algorithm.isInWinningRegion(vertexId)) {
-                graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "3", o);
-                graph.setCellStyles(mxConstants.STYLE_STROKECOLOR, colorToHex(Color.GREEN.darker()), o);
+                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKEWIDTH, "3", o);
+                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKECOLOR, colorToHex(Color.GREEN.darker()), o);
             } else if (algorithm.isEnded()) {
-                graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "3", o);
-                graph.setCellStyles(mxConstants.STYLE_STROKECOLOR, colorToHex(Color.RED.darker()), o);
+                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKEWIDTH, "3", o);
+                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKECOLOR, colorToHex(Color.RED.darker()), o);
             }else{
-                graph.setCellStyles(mxConstants.STYLE_STROKEWIDTH, "1", o);
-                graph.setCellStyles(mxConstants.STYLE_STROKECOLOR, colorToHex(Color.BLACK), o);
+                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKEWIDTH, "1", o);
+                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKECOLOR, "#6482B9", o);
             }
         }
     }
@@ -214,33 +247,31 @@ public class GraphPanel extends mxGraphComponent {
         return String.format("#%02x%02x%02x", color.getRed(), color.getGreen(), color.getBlue());
     }
 
-    public void applyLayout() {
-        graph.getModel().beginUpdate();
-        mxIGraphLayout layout = new mxHierarchicalLayout(graph);
-        layout.execute(graph.getDefaultParent());
-        shift();
-        graph.getModel().endUpdate();
+    public void applyLayout(Layouts layouts) {
+        displayGraph();
+        mxGraphLayout graphLayout = layouts.getLayout(graphComponent.getGraph());
+        graphLayout.execute(graphComponent.getGraph().getDefaultParent());
     }
 
     private void shift() {
-        Object[] cells = graph.getChildCells(graph.getDefaultParent());
+        Object[] cells = graphComponent.getGraph().getChildCells(graphComponent.getGraph().getDefaultParent());
         for (Object cell : cells) {
             Object[] c = {cell};
-            graph.moveCells(c, 25, 25);
+            graphComponent.getGraph().moveCells(c, 25, 25);
         }
     }
 
     public void deleteSelected() {
-        mxCell c = ((mxCell) graph.getSelectionCell());
+        mxCell c = ((mxCell) graphComponent.getGraph().getSelectionCell());
         if (c != null) {
             if (c.isVertex()) {
                 model.deleteVertex(c.getId());
                 Object[] cells = {c};
-                graph.removeCells(cells);
+                graphComponent.getGraph().removeCells(cells);
             } else if (c.isEdge()) {
                 model.deleteEdge(c.getSource().getId(), c.getTarget().getId());
                 Object[] cells = {c};
-                graph.removeCells(cells);
+                graphComponent.getGraph().removeCells(cells);
             }
         }
     }
@@ -252,5 +283,42 @@ public class GraphPanel extends mxGraphComponent {
     public void setAlgorithm(Algorithm algorithm) {
         this.algorithm = algorithm;
         updateGraph();
+    }
+
+    public enum Layouts{
+        FAST_ORGANIC("Fast Organic", mxFastOrganicLayout.class),
+        ORGANIC("Organic", mxOrganicLayout.class),
+        HIERARCHICAL("Hierarchical",mxHierarchicalLayout.class),
+        CIRCLE("Circle",mxCircleLayout.class),
+        COMPACT_TREE("Compact Tree",mxCompactTreeLayout.class);
+
+        private String name;
+        private Class<? extends mxGraphLayout> layoutClass;
+
+        Layouts(String name, Class<? extends mxGraphLayout> layoutClass) {
+            this.name = name;
+            this.layoutClass = layoutClass;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public mxGraphLayout getLayout(mxGraph graphView) {
+            Class[] types = {mxGraph.class};
+            try {
+                Constructor<? extends mxGraphLayout> constructor = layoutClass.getConstructor(types);
+                return constructor.newInstance(graphView);
+            } catch (Exception e) {
+                //can't happen
+                e.printStackTrace();
+            }
+            return new mxFastOrganicLayout(graphView);
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }

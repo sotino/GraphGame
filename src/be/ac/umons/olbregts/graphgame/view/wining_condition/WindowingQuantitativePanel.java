@@ -16,6 +16,7 @@ public class WindowingQuantitativePanel extends WinningPanel {
 
     @Override
     public void initUI() {
+        removeAll();
         setLayout(new BorderLayout());
         SpinnerNumberModel model = new SpinnerNumberModel();
         model.setValue(0);
@@ -30,7 +31,7 @@ public class WindowingQuantitativePanel extends WinningPanel {
 
     @Override
     public Game getDefaultGame(Graph graph) {
-        int windowSize = 5;// (int) (graph.getVertexCount() * 0.25);
+        int windowSize = 5;
         return new WindowingQuantitativeGame(graph, 0, windowSize);
     }
 

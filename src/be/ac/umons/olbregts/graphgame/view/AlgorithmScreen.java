@@ -135,6 +135,7 @@ public class AlgorithmScreen extends JPanel {
             WinningPanel winningPanel = selected.getWinningPanel();
             winningPanel.setGraph(graph);
             winning.add(winningPanel, BorderLayout.CENTER);
+            winning.revalidate();
             winning.setVisible(true);
         });
 
@@ -185,7 +186,7 @@ public class AlgorithmScreen extends JPanel {
         reload.addActionListener(e -> {
             try {
                 algorithm.reset(game);
-                resetGraph();
+                updateGraph();
                 enableComponents(commandPanel, true);
             } catch (IllegalGraphException e1) {
                 //Can't happen cause the graph was validated before
@@ -197,8 +198,7 @@ public class AlgorithmScreen extends JPanel {
                 algorithm.reset(game);
                 updateGraph();
                 enableComponents(commandPanel, true);
-                resetGraph();
-                graphPanel.resetView();
+                graphPanel.updateGraph();
                 enableComponents(commandPanel, false);
                 enableComponents(algorithmSelection, true);
             } catch (IllegalGraphException e1) {
@@ -237,10 +237,6 @@ public class AlgorithmScreen extends JPanel {
 
     public void updateGraph() {
         graphPanel.setAlgorithm(algorithm);
-    }
-
-    public void resetGraph() {
-        graphPanel.resetView();
     }
 
     private void startAutoStart() {
