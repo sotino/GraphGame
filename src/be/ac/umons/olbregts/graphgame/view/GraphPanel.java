@@ -34,6 +34,7 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
     private Graph model;
     private Algorithm algorithm;
     private mxGraphComponent graphComponent;
+    private StrategiesViewDialog stratDialog;
 
     public GraphPanel() {
         this(new GraphObjectOriented());
@@ -51,13 +52,13 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
         JButton applyLayout = new JButton("Apply");
         layoutPanel.add(applyLayout, BorderLayout.EAST);
         JComboBox<Layouts> layoutCB = new JComboBox<>(Layouts.values());
-        layoutPanel.add(layoutCB,BorderLayout.CENTER);
+        layoutPanel.add(layoutCB, BorderLayout.CENTER);
         applyLayout.addActionListener(e -> {
             Layouts selected = (Layouts) layoutCB.getSelectedItem();
             applyLayout(selected);
         });
         layoutCB.setSelectedItem(Layouts.FAST_ORGANIC);
-        controlPanel.add(layoutPanel,BorderLayout.WEST);
+        controlPanel.add(layoutPanel, BorderLayout.WEST);
 
         JPanel zoomPanel = new JPanel(new FlowLayout());
         zoomPanel.add(new JLabel("Zoom:"));
@@ -71,11 +72,11 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
             graphComponent.zoomOut();
         });
         zoomPanel.add(zoomOut);
-        controlPanel.add(zoomPanel,BorderLayout.EAST);
-        add(controlPanel,BorderLayout.SOUTH);
+        controlPanel.add(zoomPanel, BorderLayout.EAST);
+        add(controlPanel, BorderLayout.SOUTH);
 
         graphComponent = new mxGraphComponent(new mxGraph());
-        add(graphComponent,BorderLayout.CENTER);
+        add(graphComponent, BorderLayout.CENTER);
         this.model = model;
         this.algorithm = algorithm;
         graphComponent.getViewport().setOpaque(true);
@@ -115,6 +116,12 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
                 graphComponent.getGraph().removeCells(cells);
             }
         });
+        Window parentWindow = SwingUtilities.windowForComponent(this);
+        Frame parentFrame = null;
+        if (parentWindow instanceof Frame) {
+            parentFrame = (Frame)parentWindow;
+        }
+        stratDialog = new StrategiesViewDialog(parentFrame);
     }
 
     public void setEditable(boolean editable) {
@@ -127,15 +134,30 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
 
     public void updateGraph() {
         graphComponent.getGraph().getModel().beginUpdate();
-        for(String vertexId: model.getVertexsId()){
+        for (String vertexId : model.getVertexsId()) {
             updateVertexColor(vertexId);
-            if(algorithm != null) {
+        }
+        graphComponent.getGraph().getModel().endUpdate();
+
+        graphComponent.getGraph().getModel().beginUpdate();
+        boolean needStratDialog = false;
+        if (algorithm != null) {
+            for (String vertexId : model.getVertexsId()) {
                 changeLabel(vertexId, algorithm.getLabel(vertexId));
+                if(algorithm.getStrategy(vertexId) != null && algorithm.getStrategy(vertexId).getSelectedEdge()!= null)
+                    needStratDialog |= algorithm.getStrategy(vertexId).getSelectedEdge().length >1;
                 for (String succId : model.getSuccessors(vertexId)) {
                     Color color = algorithm.getEdgeColor(vertexId, succId);
                     changeEdgeColor(vertexId, succId, color);
                 }
             }
+        }
+        //TODO change cause every vertex don't have more strats
+        if(needStratDialog){
+            stratDialog.updateStrategies();
+            stratDialog.setVisible(true);
+        }else{
+            stratDialog.setVisible(false);
         }
         graphComponent.getGraph().getModel().endUpdate();
         graphComponent.getGraph().repaint();
@@ -143,9 +165,9 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
 
     private void changeEdgeColor(String srcId, String targetId, Color color) {
         String hexColor;
-        if(color == null){
+        if (color == null) {
             hexColor = "#6482B9";
-        }else {
+        } else {
             hexColor = colorToHex(color);
         }
         Object[] edges = graphComponent.getGraph().getEdgesBetween(getVertexView(srcId), getVertexView(targetId), true);
@@ -156,7 +178,7 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
 
     private void changeLabel(String vertexId, String label) {
         mxCellState state = graphComponent.getGraph().getView().getState(getVertexView(vertexId));
-        state.setLabel(vertexId+" "+label);
+        state.setLabel('[' + vertexId + "] " + label);
     }
 
     private void displayGraph() {
@@ -226,8 +248,8 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
             Object[] o = {getVertexView(vertexId)};
             if (color != null) {
                 graphComponent.getGraph().setCellStyles(mxConstants.STYLE_FILLCOLOR, colorToHex(color), o);
-            }else{
-                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_FILLCOLOR,"#C3D9FF" , o);
+            } else {
+                graphComponent.getGraph().setCellStyles(mxConstants.STYLE_FILLCOLOR, "#C3D9FF", o);
             }
             if (algorithm.isInWinningRegion(vertexId)) {
                 graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKEWIDTH, "3", o);
@@ -235,7 +257,7 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
             } else if (algorithm.isEnded()) {
                 graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKEWIDTH, "3", o);
                 graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKECOLOR, colorToHex(Color.RED.darker()), o);
-            }else{
+            } else {
                 graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKEWIDTH, "1", o);
                 graphComponent.getGraph().setCellStyles(mxConstants.STYLE_STROKECOLOR, "#6482B9", o);
             }
@@ -282,15 +304,24 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
 
     public void setAlgorithm(Algorithm algorithm) {
         this.algorithm = algorithm;
+        stratDialog.init(model,algorithm);
+        stratDialog.setVisible(false);
         updateGraph();
     }
 
-    public enum Layouts{
+    @Override
+    public void removeNotify() {
+        super.removeNotify();
+        stratDialog.setVisible(false);
+    }
+
+
+    public enum Layouts {
         FAST_ORGANIC("Fast Organic", mxFastOrganicLayout.class),
         ORGANIC("Organic", mxOrganicLayout.class),
-        HIERARCHICAL("Hierarchical",mxHierarchicalLayout.class),
-        CIRCLE("Circle",mxCircleLayout.class),
-        COMPACT_TREE("Compact Tree",mxCompactTreeLayout.class);
+        HIERARCHICAL("Hierarchical", mxHierarchicalLayout.class),
+        CIRCLE("Circle", mxCircleLayout.class),
+        COMPACT_TREE("Compact Tree", mxCompactTreeLayout.class);
 
         private String name;
         private Class<? extends mxGraphLayout> layoutClass;

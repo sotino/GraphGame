@@ -7,6 +7,7 @@ package be.ac.umons.olbregts.graphgame.view;
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmInfo;
 import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmesFactory;
+import be.ac.umons.olbregts.graphgame.algorithm.implementation.GoodWin;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
@@ -196,15 +197,12 @@ public class AlgorithmScreen extends JPanel {
         changeAlgo.addActionListener(e -> {
             try {
                 algorithm.reset(game);
-                updateGraph();
-                enableComponents(commandPanel, true);
-                graphPanel.updateGraph();
+                graphPanel.setAlgorithm(null);
                 enableComponents(commandPanel, false);
                 enableComponents(algorithmSelection, true);
             } catch (IllegalGraphException e1) {
                 //Can't happen cause the graph was validated before
             }
-
         });
 
     }
@@ -236,7 +234,7 @@ public class AlgorithmScreen extends JPanel {
     }
 
     public void updateGraph() {
-        graphPanel.setAlgorithm(algorithm);
+        graphPanel.updateGraph();
     }
 
     private void startAutoStart() {

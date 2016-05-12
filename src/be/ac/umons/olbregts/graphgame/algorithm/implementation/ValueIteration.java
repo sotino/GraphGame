@@ -88,7 +88,6 @@ public class ValueIteration implements Algorithm {
         ended = true;
         Map<String,Integer> previous = clonePreviousResult();
         for(String vertexId: game.getGraph().getVertexsId()){
-        //for (int v = 0; v < game.getGraph().getVertexCount(); v++) {
             if (!isTarget(vertexId)) {
                 if (game.getGraph().getPlayer(vertexId) == Graph.PLAYER1) {
                     int min = Integer.MAX_VALUE;
@@ -106,10 +105,8 @@ public class ValueIteration implements Algorithm {
                     if (!vertexValues.get(vertexId).equals(previous.get(vertexId))) {
                         ended = false;
                         mainStrat.put(vertexId,argMin);
-                        //mainStrat[v] = argMin;
                         if (previous.get(vertexId) == Integer.MAX_VALUE) {
                             escapeStrat.put(vertexId,argMin);
-                            //escapeStrat[v] = argMin;
                         }
                     }
                 } else {
@@ -129,7 +126,6 @@ public class ValueIteration implements Algorithm {
                     if (!vertexValues.get(vertexId).equals(previous.get(vertexId))) {
                         ended = false;
                         mainStrat.put(vertexId,argMax);
-                        //mainStrat[v] = argMax;
                     }
                 }
                 if (vertexValues.get(vertexId) < minBorder) {

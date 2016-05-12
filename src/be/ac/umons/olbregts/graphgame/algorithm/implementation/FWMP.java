@@ -58,20 +58,21 @@ public class FWMP implements Algorithm {
             directFWMP.reset(new WindowingQuantitativeGame(g, game.getWiningCondition(), game.getWindowsSize()));
             directFWMP.compute();
             String[] wd = directFWMP.getWinningRegion();
-            for(String winningVertex: wd){
+            /*for(String winningVertex: wd){
                 strat.put(winningVertex,directFWMP.getStrategy(winningVertex));
-            }
+            }*/
             ReachibilityGame attrGame = new ReachibilityGame(g, Arrays.asList(wd));
             attractor.reset(attrGame);
             attractor.compute();
             String[] subGraph = g.getVertexsId();
             boolean attrIsEmpty = true;
             for (String vertexId : subGraph) {
+                strat.put(vertexId,directFWMP.getStrategy(vertexId));
                 if (attractor.isInWinningRegion(vertexId)) {
                     attrIsEmpty = false;
                     g.deleteVertex(vertexId);
                     label.put(vertexId,directFWMP.getLabel(vertexId));
-                    if (!strat.containsKey(vertexId))
+                    if (!Arrays.stream(wd).anyMatch(vertexId::equals))
                         strat.put(vertexId, attractor.getStrategy(vertexId));
                 }
             }
@@ -111,16 +112,19 @@ public class FWMP implements Algorithm {
 
     @Override
     public Color getVertexColor(String vertexId) {
+        if(! isEnded() && ! g.contains(vertexId)){
+            return Color.RED;
+        }
         return null;
     }
 
     @Override
     public Color getEdgeColor(String srcId, String targetId) {
-        Strategy s = strat.get(srcId);
-        if(s!= null && s.getSelectedEdge().length>0){
-            if(targetId.equals(s.getSelectedEdge()[0])){
-                return Color.GREEN;
-            }
+        if(! isEnded() && (!g.contains(srcId) || !g.contains(targetId))){
+            return Color.RED;
+        }
+        if(strat.get(srcId) != null && Arrays.stream(strat.get(srcId).getSelectedEdge()).anyMatch(targetId::equals)){
+            return Color.GREEN;
         }
         return null;
     }

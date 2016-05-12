@@ -1,7 +1,9 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
+import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
 import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.WindowStrategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
@@ -9,10 +11,8 @@ import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGam
 import be.ac.umons.olbregts.graphgame.model.implementation.games.WindowingQuantitativeGame;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by simon on 30/03/16.
@@ -24,8 +24,8 @@ public class DirectFWMP implements Algorithm {
     private boolean ended;
     private GoodWin goodWin;
     private List<String> winGW;
-    private Map<String,Strategy> removedStrat;
-    private Map<String,String> removedLabel;
+    private Map<String,Strategy> goodwinStrat;
+    private Map<String,String> goodwinLabel;
 
     @Override
     public void reset(Game game) throws IllegalGraphException {
@@ -36,8 +36,8 @@ public class DirectFWMP implements Algorithm {
         g = game.getGraph().clone();
         ended = false;
         winGW = new ArrayList<>(g.getVertexCount());
-        removedStrat = new HashMap<>(g.getVertexCount());
-        removedLabel = new HashMap<>(g.getVertexCount());
+        goodwinStrat = new HashMap<>(g.getVertexCount());
+        goodwinLabel = new HashMap<>(g.getVertexCount());
         goodWin = null;
     }
 
@@ -67,17 +67,24 @@ public class DirectFWMP implements Algorithm {
                 } else {
                     looseGW.add(vertexId);
                 }
+                goodwinStrat.put(vertexId,goodWin.getStrategy(vertexId));
+                goodwinLabel.put(vertexId,goodWin.getLabel(vertexId));
             }
             if (winGW.size() == g.getVertexCount() || winGW.isEmpty()) {
                 ended = true;
             } else {
                 Safety safety = new Safety();
                 safety.reset(new ReachibilityGame(g, looseGW));
-                winGW.clear();
+                safety.compute();
+                //winGW.clear();
                 for(String vertexId:g.getVertexsId()){
                     if (!safety.isInWinningRegion(vertexId)) {
-                        removedStrat.put(vertexId,goodWin.getStrategy(vertexId));
-                        removedLabel.put(vertexId,goodWin.getLabel(vertexId));
+                        WindowStrategy ws = (WindowStrategy) goodwinStrat.get(vertexId);
+                        MemoryLessStrategy safetyStrat = (MemoryLessStrategy) safety.getStrategy(vertexId);
+                        if(!looseGW.contains(vertexId)) {
+                            // if the windows is opened in [vertexId] then try to reach safety
+                            ws.setStrategies(0, safetyStrat.getChoice());
+                        }
                         g.deleteVertex(vertexId);
                     }
                 }
@@ -99,27 +106,17 @@ public class DirectFWMP implements Algorithm {
 
     @Override
     public Strategy getStrategy(String vertexId) {
-        Strategy s = removedStrat.get(vertexId);
-        if (s != null)
-            return s;
-        if (goodWin == null)
-            return null;
-        return goodWin.getStrategy(vertexId);
+        return goodwinStrat.get(vertexId);
     }
 
     @Override
     public String getLabel(String vertexId) {
-        String label = removedLabel.get(vertexId);
-        if (label != null)
-            return label;
-        if (goodWin == null)
-            return null;
-        return goodWin.getLabel(vertexId);
+        return goodwinLabel.get(vertexId);
     }
 
     @Override
     public Color getVertexColor(String vertexId) {
-        if(! g.contains(vertexId)){
+        if(! isEnded() && ! g.contains(vertexId)){
             return Color.RED;
         }
         return null;
@@ -127,11 +124,12 @@ public class DirectFWMP implements Algorithm {
 
     @Override
     public Color getEdgeColor(String srcId, String targetId) {
-        if(!g.contains(srcId) || !g.contains(targetId)){
+        if(! isEnded() && (!g.contains(srcId) || !g.contains(targetId))){
             return Color.RED;
         }
-        if (goodWin == null)
-            return null;
-        return goodWin.getEdgeColor(srcId, targetId);
+        if(goodwinStrat.get(srcId) != null && Arrays.stream(goodwinStrat.get(srcId).getSelectedEdge()).anyMatch(targetId::equals)){
+            return Color.GREEN;
+        }
+        return null;
     }
 }

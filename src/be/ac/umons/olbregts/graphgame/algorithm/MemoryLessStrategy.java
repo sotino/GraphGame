@@ -19,6 +19,10 @@ public class MemoryLessStrategy implements Strategy {
         this.vertexId = vertexId;
     }
 
+    public String getChoice(){
+        return vertexId;
+    }
+
     @Override
     public String printChoose() {
         if (vertexId != null) {

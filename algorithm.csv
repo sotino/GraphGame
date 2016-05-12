@@ -8,3 +8,4 @@ Value Iteration;be.ac.umons.olbregts.graphgame.algorithm.implementation.ValueIte
 Mean Payoff;be.ac.umons.olbregts.graphgame.algorithm.implementation.MeanPayoff;be.ac.umons.olbregts.graphgame.view.wining_condition.QuantitativePanel
 Good Window;be.ac.umons.olbregts.graphgame.algorithm.implementation.GoodWin;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowingQuantitativePanel
 Direct Fixed Windowing Mean Payoff;be.ac.umons.olbregts.graphgame.algorithm.implementation.DirectFWMP;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowingQuantitativePanel
+Fixed Windowing Mean Payoff;be.ac.umons.olbregts.graphgame.algorithm.implementation.FWMP;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowingQuantitativePanel
