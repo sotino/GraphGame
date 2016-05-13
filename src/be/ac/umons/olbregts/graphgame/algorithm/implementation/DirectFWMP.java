@@ -79,11 +79,13 @@ public class DirectFWMP implements Algorithm {
                 //winGW.clear();
                 for(String vertexId:g.getVertexsId()){
                     if (!safety.isInWinningRegion(vertexId)) {
-                        WindowStrategy ws = (WindowStrategy) goodwinStrat.get(vertexId);
-                        MemoryLessStrategy safetyStrat = (MemoryLessStrategy) safety.getStrategy(vertexId);
+                       /* WindowStrategy ws = (WindowStrategy) goodwinStrat.get(vertexId);
+                        MemoryLessStrategy safetyStrat = (MemoryLessStrategy) safety.getStrategy(vertexId);*/
+                        //TODO Not necessary. looseGW can't be in the winning region
                         if(!looseGW.contains(vertexId)) {
                             // if the windows is opened in [vertexId] then try to reach safety
-                            ws.setStrategies(0, safetyStrat.getChoice());
+                            goodwinStrat.put(vertexId,safety.getStrategy(vertexId));
+                            /*ws.setStrategies(0, safetyStrat.getChoice());*/
                         }
                         g.deleteVertex(vertexId);
                     }

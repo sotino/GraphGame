@@ -58,9 +58,6 @@ public class FWMP implements Algorithm {
             directFWMP.reset(new WindowingQuantitativeGame(g, game.getWiningCondition(), game.getWindowsSize()));
             directFWMP.compute();
             String[] wd = directFWMP.getWinningRegion();
-            /*for(String winningVertex: wd){
-                strat.put(winningVertex,directFWMP.getStrategy(winningVertex));
-            }*/
             ReachibilityGame attrGame = new ReachibilityGame(g, Arrays.asList(wd));
             attractor.reset(attrGame);
             attractor.compute();
