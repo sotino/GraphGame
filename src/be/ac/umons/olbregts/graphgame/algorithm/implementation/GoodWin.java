@@ -1,7 +1,6 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
 import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
 import be.ac.umons.olbregts.graphgame.algorithm.WindowStrategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
@@ -65,8 +64,8 @@ public class GoodWin implements Algorithm {
                     int max = Integer.MIN_VALUE;
                     for (int i = 0; i < succ.length; i++) {
                         int[] cSucc = c.get(succ[i]);
-                        int current = succWeight[i] + Math.max(cSucc[l - 1], cSucc[0]);
-                        if (max < current) {
+                        int current = oplus(succWeight[i], Math.max(cSucc[l - 1], cSucc[0]));
+                        if (max < current || i==0) {
                             max = current;
                             strats.get(vertexId).setStrategies(game.getWindowsSize()-l,succ[i]);
                         }
@@ -76,8 +75,8 @@ public class GoodWin implements Algorithm {
                     int min = Integer.MAX_VALUE;
                     for (int i = 0; i < succ.length; i++) {
                         int[] cSucc = c.get(succ[i]);
-                        int current = succWeight[i] + Math.max(cSucc[l - 1], cSucc[0]);
-                        if (min > current) {
+                        int current = oplus(succWeight[i], Math.max(cSucc[l - 1], cSucc[0]));
+                        if (min > current || i==0) {
                             min = current;
                             strats.get(vertexId).setStrategies(game.getWindowsSize()-l,succ[i]);
                         }
@@ -86,6 +85,20 @@ public class GoodWin implements Algorithm {
                 }
             }
         }
+    }
+
+    private int oplus(int a,int b){
+        if(a == Integer.MAX_VALUE || a == Integer.MIN_VALUE){
+            return a;
+        }
+        if(b == Integer.MAX_VALUE || b == Integer.MIN_VALUE){
+            return b;
+        }
+        int sum = a+b;
+        if(sum < 0){
+            return Integer.MIN_VALUE;
+        }
+        return sum;
     }
 
     @Override
@@ -111,7 +124,14 @@ public class GoodWin implements Algorithm {
 
     @Override
     public String getLabel(String vertexId) {
-        return "" + c.get(vertexId)[l];
+        int value = c.get(vertexId)[l];
+        if(value == Integer.MAX_VALUE){
+            return "inf";
+        }
+        if(value == Integer.MIN_VALUE){
+            return "- inf";
+        }
+        return "" + value;
     }
 
     @Override
