@@ -1,14 +1,12 @@
 package be.ac.umons.olbregts.graphgame.view;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
 
 /**
  * Created by simon on 11/05/16.
@@ -21,19 +19,19 @@ public class StrategiesViewDialog extends JDialog {
     private boolean firstPack;
 
     public StrategiesViewDialog(Frame owner) {
-        super(owner,"Strategies view",false);
-        firstPack=false;
+        super(owner, "Strategies view", false);
+        firstPack = false;
     }
 
 
     public void init(Graph graph, Algorithm algorithm) {
         this.graph = graph;
         this.algorithm = algorithm;
-        firstPack=false;
+        firstPack = false;
     }
 
     public void updateStrategies() {
-        if(graph!= null && algorithm != null) {
+        if (graph != null && algorithm != null) {
             JPanel panel = new JPanel();
             panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
             if (graph.getVertexCount() >= 1) {
@@ -44,17 +42,21 @@ public class StrategiesViewDialog extends JDialog {
                 for (String vertexId : graph.getVertexsId()) {
                     title[i] = vertexId;
                     Strategy s = algorithm.getStrategy(vertexId);
-                    for (int j = 0; j < s.getSelectedEdge().length; j++) {
-                        if( strats.size() <= j){
-                            strats.add(j,new String[graph.getVertexCount()+1]);
-                            strats.get(j)[0]= ""+j;
+                    if (s != null) {
+                        for (int j = 0; j < s.getSelectedEdge().length; j++) {
+                            if (strats.size() <= j) {
+                                strats.add(j, new String[graph.getVertexCount() + 1]);
+                                strats.get(j)[0] = "" + j;
+                            }
+                            strats.get(j)[i] = s.getSelectedEdge()[j];
                         }
-                        strats.get(j)[i] = s.getSelectedEdge()[j];
                     }
                     i++;
                 }
                 String[][] dataRows = strats.toArray(new String[0][0]);
-                setContentPane(new JScrollPane(new JTable(dataRows, title)));
+                JTable table = new JTable(dataRows, title);
+                table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+                setContentPane(new JScrollPane(table));
             }
             if (!firstPack) {
                 pack();

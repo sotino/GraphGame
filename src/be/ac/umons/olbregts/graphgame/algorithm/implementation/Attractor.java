@@ -5,28 +5,29 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
-import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.MemoryLessStrategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.Queue;
 
 /**
  * @author Simon
  */
 public class Attractor implements Algorithm {
 
-    private Map<String, Boolean> attractor;
     private ReachibilityGame game;
+    private Map<String, Boolean> attractor;
     private Map<String, String> strat;
+    private Map<String, Integer> succCount;
     private boolean ended;
     private int winningPlayer = Graph.PLAYER1;
+    private Queue<String> toProcess;
 
     @Override
     public void reset(Game game) throws IllegalGraphException {
@@ -37,9 +38,12 @@ public class Attractor implements Algorithm {
         int n = game.getGraph().getVertexCount();
         attractor = new HashMap<>(n);
         strat = new HashMap<>(n);
+        succCount = new HashMap<>(n);
+        toProcess = new LinkedList<>();
         ended = false;
-        for (String vertex : this.game.getWiningCondition()) {
-            attractor.put(vertex, true);
+        toProcess.addAll(this.game.getWiningCondition());
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            succCount.put(vertexId, game.getGraph().getSuccessorCount(vertexId));
         }
     }
 
@@ -49,8 +53,7 @@ public class Attractor implements Algorithm {
 
     @Override
     public boolean isInWinningRegion(String vertexId) {
-        boolean winning = attractor.containsKey(vertexId) && attractor.get(vertexId);
-        return winning;
+        return attractor.containsKey(vertexId) && attractor.get(vertexId);
     }
 
     @Override
@@ -78,40 +81,29 @@ public class Attractor implements Algorithm {
 
     @Override
     public void computeAStep() {
-        ended = true;
-        for (String vertexId : game.getGraph().getVertexsId()) {
-            if (!isInWinningRegion(vertexId)) {
-                String[] successor = game.getGraph().getSuccessors(vertexId);
-                if (game.getGraph().getPlayer(vertexId) == winningPlayer) {
-                    for (String succId : successor) {
-                        if (isInWinningRegion(succId)) {
-                            attractor.put(vertexId, true);
-                            strat.put(vertexId, succId);
-                            ended = false;
-                            break;
+        Queue<String> nextProcess = new LinkedList<>();
+        while (!toProcess.isEmpty()) {
+            String vertexId = toProcess.remove();
+            if (!attractor.containsKey(vertexId)) {
+                attractor.put(vertexId, true);
+                for (String predecessor : game.getGraph().getPredecessor(vertexId)) {
+                    if (game.getGraph().getPlayer(predecessor) == winningPlayer) {
+                        if (!strat.containsKey(predecessor)) {
+                            strat.put(predecessor, vertexId);
                         }
-                    }
-                } else {
-                    String escape = null;
-                    for (String succId : successor) {
-                        if (!isInWinningRegion(succId)) {
-                            escape = succId;
-                            break;
-                        }
-                    }
-                    if (escape == null) {
-                        attractor.put(vertexId, true);
-                        ended = false;
-                        if (game.getGraph().hasSuccessors(vertexId)) {
-                            strat.put(vertexId, game.getGraph().getSuccessors(vertexId)[0]);
-                        }
+                        nextProcess.add(predecessor);
+                    } else if (succCount.get(predecessor) == 1) {
+                        nextProcess.add(predecessor);
+                    } else {
+                        succCount.put(predecessor, succCount.get(predecessor) - 1);
                     }
                 }
             }
         }
+        toProcess = nextProcess;
+        ended = nextProcess.isEmpty();
         if (ended) {
             for (String vertexId : game.getGraph().getVertexsId()) {
-                //for (int i = 0; i < game.getGraph().getVertexCount(); i++) {
                 if (!strat.containsKey(vertexId)) {
                     if (isInWinningRegion(vertexId)) {
                         for (String succId : game.getGraph().getSuccessors(vertexId)) {
@@ -159,8 +151,10 @@ public class Attractor implements Algorithm {
 
     @Override
     public Color getEdgeColor(String srcId, String targetId) {
-        if (targetId.equals(strat.get(srcId))) {
-            return Color.GREEN;
+        if (ended || attractor.containsKey(srcId)) {
+            if (targetId.equals(strat.get(srcId))) {
+                return Color.GREEN;
+            }
         }
         return null;
     }

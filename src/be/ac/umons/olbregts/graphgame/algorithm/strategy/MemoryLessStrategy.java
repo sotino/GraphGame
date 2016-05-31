@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package be.ac.umons.olbregts.graphgame.algorithm;
+package be.ac.umons.olbregts.graphgame.algorithm.strategy;
 
 /**
  * @author Simon
@@ -17,10 +17,6 @@ public class MemoryLessStrategy implements Strategy {
 
     public MemoryLessStrategy(String vertexId) {
         this.vertexId = vertexId;
-    }
-
-    public String getChoice(){
-        return vertexId;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
-import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.MemoryLessStrategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
@@ -18,8 +18,8 @@ import java.util.Map;
  */
 public class MeanPayoff implements Algorithm {
 
-    private Map<String,Double> value;
-    private Map<String,String> strat;
+    private Map<String, Double> value;
+    private Map<String, String> strat;
     private long k;
     private long kMax;
     private QuantitativeGame game;
@@ -34,15 +34,15 @@ public class MeanPayoff implements Algorithm {
         value = new HashMap<>(n);
         strat = new HashMap<>(n);
         int d = Integer.MIN_VALUE;
-        for(String vertexId : game.getGraph().getVertexsId()){
+        for (String vertexId : game.getGraph().getVertexsId()) {
             int[] succWeight = game.getGraph().getSuccessorsWeight(vertexId);
             if (succWeight.length < 1) {
                 throw new IllegalGraphException("No dead end allowed. The vertex " + vertexId + " have no successor");
             }
             for (int w : succWeight) {
-                d = Math.max(d,Math.abs(w));
+                d = Math.max(d, Math.abs(w));
             }
-            value.put(vertexId,0.);
+            value.put(vertexId, 0.);
         }
         k = 0;
         kMax = 4 * d * n * n * n;
@@ -62,9 +62,8 @@ public class MeanPayoff implements Algorithm {
 
     @Override
     public void computeAStep() {
-        Map<String,Double> temp = new HashMap<>(value.size());
-        for(String vertexId: game.getGraph().getVertexsId()){
-        //for (int v = 0; v < game.getGraph().getVertexCount(); v++) {
+        Map<String, Double> temp = new HashMap<>(value.size());
+        for (String vertexId : game.getGraph().getVertexsId()) {
             String[] succ = game.getGraph().getSuccessors(vertexId);
             int[] succWeight = game.getGraph().getSuccessorsWeight(vertexId);
             int player = game.getGraph().getPlayer(vertexId);
@@ -74,24 +73,22 @@ public class MeanPayoff implements Algorithm {
                 if (player == Graph.PLAYER1) {
                     if (newValue < s) {
                         newValue = s;
-                        strat.put(vertexId,succ[i]);
+                        strat.put(vertexId, succ[i]);
                     }
                 } else {
                     if (newValue > s) {
                         newValue = s;
-                        strat.put(vertexId,succ[i]);
+                        strat.put(vertexId, succ[i]);
                     }
                 }
             }
-            temp.put(vertexId,newValue);
+            temp.put(vertexId, newValue);
         }
         value = temp;
-        //TODO check if k++ before the is ended and if v=.../k is correct
         k++;
         if (isEnded()) {
             int n = game.getGraph().getVertexCount();
-            for(Map.Entry<String,Double> valueEntry : value.entrySet()){
-            //for (int i = 0; i < value.length; i++) {
+            for (Map.Entry<String, Double> valueEntry : value.entrySet()) {
                 double v = valueEntry.getValue() / k;
                 double upperBound = v + (1 * 1. / (2 * n * (n - 1)));
                 double lowerBound = v - (1 * 1. / (2 * n * (n - 1)));
@@ -99,13 +96,11 @@ public class MeanPayoff implements Algorithm {
                     double t = Math.ceil(v * l) / l;
                     if (lowerBound < t && t < upperBound) {
                         valueEntry.setValue(t);
-                        //value[i] = t;
                         break;
                     }
                     t = Math.floor(v * l) / l;
                     if (lowerBound < t && t < upperBound) {
                         valueEntry.setValue(t);
-                        //value[i] = t;
                         break;
                     }
                 }
@@ -119,10 +114,10 @@ public class MeanPayoff implements Algorithm {
     }
 
     @Override
-    public String[] getWinningRegion(){
+    public String[] getWinningRegion() {
         java.util.List<String> winningRegion = new ArrayList<>();
-        for(String vertexId:game.getGraph().getVertexsId()){
-            if(isInWinningRegion(vertexId)){
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            if (isInWinningRegion(vertexId)) {
                 winningRegion.add(vertexId);
             }
         }

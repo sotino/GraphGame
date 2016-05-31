@@ -7,7 +7,6 @@ package be.ac.umons.olbregts.graphgame.view;
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmInfo;
 import be.ac.umons.olbregts.graphgame.algorithm.AlgorithmesFactory;
-import be.ac.umons.olbregts.graphgame.algorithm.implementation.GoodWin;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;

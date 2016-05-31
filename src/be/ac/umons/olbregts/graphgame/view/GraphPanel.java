@@ -7,8 +7,8 @@ package be.ac.umons.olbregts.graphgame.view;
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
-import com.mxgraph.layout.*;
 import com.mxgraph.layout.hierarchical.mxHierarchicalLayout;
+import com.mxgraph.layout.*;
 import com.mxgraph.model.mxCell;
 import com.mxgraph.model.mxGraphModel;
 import com.mxgraph.swing.mxGraphComponent;
@@ -18,16 +18,13 @@ import com.mxgraph.view.mxCellState;
 import com.mxgraph.view.mxGraph;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 
 /**
  * @author Simon
  */
-public class GraphPanel extends JPanel { //mxGraphComponent {
+public class GraphPanel extends JPanel {
 
     private static final String P1_STYLE = "shape=ellipse";
     private static final String P2_STYLE = "defaultVertex";
@@ -119,7 +116,7 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
         Window parentWindow = SwingUtilities.windowForComponent(this);
         Frame parentFrame = null;
         if (parentWindow instanceof Frame) {
-            parentFrame = (Frame)parentWindow;
+            parentFrame = (Frame) parentWindow;
         }
         stratDialog = new StrategiesViewDialog(parentFrame);
     }
@@ -144,19 +141,20 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
         if (algorithm != null) {
             for (String vertexId : model.getVertexsId()) {
                 changeLabel(vertexId, algorithm.getLabel(vertexId));
-                if(algorithm.getStrategy(vertexId) != null && algorithm.getStrategy(vertexId).getSelectedEdge()!= null)
-                    needStratDialog |= algorithm.getStrategy(vertexId).getSelectedEdge().length >1;
+                if (algorithm.getStrategy(vertexId) != null && algorithm.getStrategy(vertexId).getSelectedEdge() != null)
+                    needStratDialog |= algorithm.getStrategy(vertexId).getSelectedEdge().length > 1;
                 for (String succId : model.getSuccessors(vertexId)) {
                     Color color = algorithm.getEdgeColor(vertexId, succId);
                     changeEdgeColor(vertexId, succId, color);
                 }
             }
         }
-        //TODO change cause every vertex don't have more strats
-        if(needStratDialog){
+
+
+        if (needStratDialog) {
             stratDialog.updateStrategies();
             stratDialog.setVisible(true);
-        }else{
+        } else {
             stratDialog.setVisible(false);
         }
         graphComponent.getGraph().getModel().endUpdate();
@@ -178,7 +176,11 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
 
     private void changeLabel(String vertexId, String label) {
         mxCellState state = graphComponent.getGraph().getView().getState(getVertexView(vertexId));
-        state.setLabel('[' + vertexId + "] " + label);
+        String str = '[' + vertexId + "]";
+        if(label != null){
+            str += " " + label;
+        }
+        state.setLabel(str);
     }
 
     private void displayGraph() {
@@ -187,12 +189,10 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
         try {
             graphComponent.getGraph().removeCells(graphComponent.getGraph().getChildVertices(graphComponent.getGraph().getDefaultParent()));
             graphComponent.getGraph().refresh();
-            int nbNodes = model.getVertexCount();
             for (String vertexId : model.getVertexsId()) {
                 addVertexView(vertexId);
             }
             for (String vertexId : model.getVertexsId()) {
-                //for (int u = 0; u < nbNodes; u++) {
                 String[] succ = model.getSuccessors(vertexId);
                 int[] succW = model.getSuccessorsWeight(vertexId);
                 for (int vIndex = 0; vIndex < succ.length; vIndex++) {
@@ -232,13 +232,9 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
         }
         if (model.getPlayer(vertexId) == Graph.PLAYER1) {
             graphComponent.getGraph().insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P1_STYLE);
-            //vertexsView.add(vertexId, graph.insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P1_STYLE));
         } else {
             graphComponent.getGraph().insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P2_STYLE);
-            //vertexsView.add(vertexId, graph.insertVertex(parent, "" + vertexId, label, 100, 100, 80, 30, P2_STYLE));
         }
-        mxCell c = getVertexView(vertexId);
-        // ((mxCell) vertexsView.get(vertexId)).setId("" + vertexId);
         updateVertexColor(vertexId);
     }
 
@@ -275,14 +271,6 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
         graphLayout.execute(graphComponent.getGraph().getDefaultParent());
     }
 
-    private void shift() {
-        Object[] cells = graphComponent.getGraph().getChildCells(graphComponent.getGraph().getDefaultParent());
-        for (Object cell : cells) {
-            Object[] c = {cell};
-            graphComponent.getGraph().moveCells(c, 25, 25);
-        }
-    }
-
     public void deleteSelected() {
         mxCell c = ((mxCell) graphComponent.getGraph().getSelectionCell());
         if (c != null) {
@@ -304,7 +292,7 @@ public class GraphPanel extends JPanel { //mxGraphComponent {
 
     public void setAlgorithm(Algorithm algorithm) {
         this.algorithm = algorithm;
-        stratDialog.init(model,algorithm);
+        stratDialog.init(model, algorithm);
         stratDialog.setVisible(false);
         updateGraph();
     }

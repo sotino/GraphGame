@@ -1,7 +1,7 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
@@ -55,15 +55,16 @@ public class Safety implements Algorithm {
     }
 
     @Override
-    public String[] getWinningRegion(){
+    public String[] getWinningRegion() {
         java.util.List<String> winningRegion = new ArrayList<>();
-        for(String vertexId:game.getGraph().getVertexsId()){
-            if(isInWinningRegion(vertexId)){
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            if (isInWinningRegion(vertexId)) {
                 winningRegion.add(vertexId);
             }
         }
         return winningRegion.toArray(new String[winningRegion.size()]);
     }
+
     @Override
     public String getLabel(String vertexId) {
         if (attractor.isInWinningRegion(vertexId)) {

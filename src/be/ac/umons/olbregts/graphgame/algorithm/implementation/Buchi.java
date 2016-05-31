@@ -1,16 +1,18 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
-import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.MemoryLessStrategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Simon on 19-01-16.
@@ -21,7 +23,6 @@ public class Buchi implements Algorithm {
     private Graph g;
     private boolean ended;
     private Map<String, String> strat;
-    //private boolean[] deleted;
     private int winningPlayer = Graph.PLAYER1;
 
     @Override
@@ -32,11 +33,6 @@ public class Buchi implements Algorithm {
         this.game = (ReachibilityGame) game;
         g = game.getGraph().clone();
         strat = new HashMap<>(g.getVertexCount());
-        /*deleted = new boolean[g.getVertexCount()];
-        for (int i = 0; i < strat.length; i++) {
-            strat[i] = -1;
-            deleted[i] = false;
-        }*/
         ended = false;
     }
 
@@ -65,9 +61,10 @@ public class Buchi implements Algorithm {
             attr.reset(attrGame);
             attr.setWinningPlayer(winningPlayer);
             attr.compute();
-            List<String> trapTargets =new ArrayList<>();
-            for(String vertexId: g.getVertexsId()){
-                if(! attr.isInWinningRegion(vertexId)){
+            List<String> trapTargets = new ArrayList<>();
+            for (String vertexId : g.getVertexsId()) {
+                System.out.println(vertexId + ": " + attr.isInWinningRegion(vertexId));
+                if (!attr.isInWinningRegion(vertexId)) {
                     trapTargets.add(vertexId);
                 }
             }
@@ -94,6 +91,9 @@ public class Buchi implements Algorithm {
                     }
                 }
                 g.deleteVertex(toRemoveId);
+            }
+            if (g.getVertexCount() == 0) {
+                ended = true;
             }
 
         } catch (IllegalGraphException e) {

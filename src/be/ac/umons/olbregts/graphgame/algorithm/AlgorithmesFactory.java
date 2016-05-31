@@ -44,7 +44,7 @@ public class AlgorithmesFactory {
                     throw new ParseException("Each line must have 3 value separed by ';'", 0);
                 }
                 String name = values[0];
-                Object alg = null;
+                Object alg;
                 try {
                     alg = Class.forName(values[1]).newInstance();
                 } catch (InstantiationException e) {
@@ -60,7 +60,7 @@ public class AlgorithmesFactory {
                 Algorithm algorithm = (Algorithm) alg;
 
 
-                Object wp = null;
+                Object wp;
                 try {
                     wp = Class.forName(values[2]).newInstance();
                 } catch (InstantiationException e) {

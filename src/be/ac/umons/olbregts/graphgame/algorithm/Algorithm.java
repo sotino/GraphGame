@@ -4,6 +4,7 @@
  */
 package be.ac.umons.olbregts.graphgame.algorithm;
 
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 

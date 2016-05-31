@@ -1,9 +1,4 @@
-package be.ac.umons.olbregts.graphgame.algorithm;
-
-import be.ac.umons.olbregts.graphgame.model.Graph;
-import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
-
-import java.util.Arrays;
+package be.ac.umons.olbregts.graphgame.algorithm.strategy;
 
 /**
  * Created by simon on 10/05/16.
@@ -18,25 +13,25 @@ public class WindowStrategy implements Strategy {
     private String[] strategies;
 
     public WindowStrategy(int lMax) {
-        this.lMax=lMax;
+        this.lMax = lMax;
         strategies = new String[lMax];
     }
 
     public WindowStrategy(String[] strategies) {
         this.strategies = strategies;
-        lMax=strategies.length;
+        lMax = strategies.length;
     }
 
-    public void setStrategies(int l,String strategy){
+    public void setStrategies(int l, String strategy) {
         strategies[lToIndex(l)] = strategy;
     }
 
-    public String getStrategy(int l){
+    public String getStrategy(int l) {
         return strategies[lToIndex(l)];
     }
 
-    private int lToIndex(int l){
-        return lMax-l-1;
+    private int lToIndex(int l) {
+        return lMax - l - 1;
     }
 
     @Override

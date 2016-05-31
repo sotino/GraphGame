@@ -18,6 +18,7 @@ public class QuantitativePanel extends WinningPanel {
     public void initUI() {
         removeAll();
         setLayout(new BorderLayout());
+        add(new JLabel("Seuil:"), BorderLayout.WEST);
         SpinnerNumberModel model = new SpinnerNumberModel();
         model.setValue(0);
         spinner = new JSpinner(model);

@@ -44,8 +44,7 @@ public class MainFrame extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(800, 600));
         setPreferredSize(new java.awt.Dimension(800, 600));
 
-        homeImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/home.jpg")));
-        homeImage.setText("homeImage");
+        homeImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/home.png")));
         getContentPane().add(homeImage, java.awt.BorderLayout.CENTER);
 
         jMenu1.setText("Graph");

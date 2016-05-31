@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package be.ac.umons.olbregts.graphgame.algorithm;
+package be.ac.umons.olbregts.graphgame.algorithm.strategy;
 
 /**
  * @author Simon
@@ -31,7 +31,7 @@ public class EscapeStrategy implements Strategy {
             strat = "-> " + "[V" + mainChoose + ']';
         }
         if (escapeChoose != null) {
-            strat += " at cost " + limitStep + " -> " + "[V" + escapeChoose  + ']';
+            strat += " at cost " + limitStep + " -> " + "[V" + escapeChoose + ']';
         }
         return strat;
     }

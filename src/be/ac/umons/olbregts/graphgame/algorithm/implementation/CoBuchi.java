@@ -1,14 +1,14 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 
 /**
  * Created by Simon on 21-01-16.
@@ -55,10 +55,10 @@ public class CoBuchi implements Algorithm {
     }
 
     @Override
-    public String[] getWinningRegion(){
+    public String[] getWinningRegion() {
         java.util.List<String> winningRegion = new ArrayList<>();
-        for(String vertexId:game.getGraph().getVertexsId()){
-            if(isInWinningRegion(vertexId)){
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            if (isInWinningRegion(vertexId)) {
                 winningRegion.add(vertexId);
             }
         }

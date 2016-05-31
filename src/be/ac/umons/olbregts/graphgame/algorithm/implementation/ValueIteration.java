@@ -5,8 +5,8 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.EscapeStrategy;
-import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.EscapeStrategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
@@ -22,9 +22,9 @@ import java.util.Map;
  */
 public class ValueIteration implements Algorithm {
 
-    private Map<String,Integer> vertexValues;
-    private Map<String,String> mainStrat;
-    private Map<String,String> escapeStrat;
+    private Map<String, Integer> vertexValues;
+    private Map<String, String> mainStrat;
+    private Map<String, String> escapeStrat;
     private boolean ended;
     private ReachibilityGame game;
     private String[] targets;
@@ -43,16 +43,14 @@ public class ValueIteration implements Algorithm {
         vertexValues = new HashMap<>(vertexCount);
         mainStrat = new HashMap<>(vertexCount);
         escapeStrat = new HashMap<>(vertexCount);
-        for(String vertexId: game.getGraph().getVertexsId()){
-            vertexValues.put(vertexId,Integer.MAX_VALUE);
-            //mainStrat[i] = -1;
-            //escapeStrat[i] = -1;
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            vertexValues.put(vertexId, Integer.MAX_VALUE);
         }
         for (String t : targets) {
             vertexValues.put(t, 0);
         }
         W = Integer.MIN_VALUE;
-        for(String vertexId:game.getGraph().getVertexsId()){
+        for (String vertexId : game.getGraph().getVertexsId()) {
             for (int succWeight : game.getGraph().getSuccessorsWeight(vertexId)) {
                 if (Math.abs(succWeight) > W) {
                     W = Math.abs(succWeight);
@@ -86,8 +84,8 @@ public class ValueIteration implements Algorithm {
     @Override
     public void computeAStep() {
         ended = true;
-        Map<String,Integer> previous = clonePreviousResult();
-        for(String vertexId: game.getGraph().getVertexsId()){
+        Map<String, Integer> previous = clonePreviousResult();
+        for (String vertexId : game.getGraph().getVertexsId()) {
             if (!isTarget(vertexId)) {
                 if (game.getGraph().getPlayer(vertexId) == Graph.PLAYER1) {
                     int min = Integer.MAX_VALUE;
@@ -104,9 +102,9 @@ public class ValueIteration implements Algorithm {
                     vertexValues.put(vertexId, min);
                     if (!vertexValues.get(vertexId).equals(previous.get(vertexId))) {
                         ended = false;
-                        mainStrat.put(vertexId,argMin);
+                        mainStrat.put(vertexId, argMin);
                         if (previous.get(vertexId) == Integer.MAX_VALUE) {
-                            escapeStrat.put(vertexId,argMin);
+                            escapeStrat.put(vertexId, argMin);
                         }
                     }
                 } else {
@@ -125,7 +123,7 @@ public class ValueIteration implements Algorithm {
                     vertexValues.put(vertexId, max);
                     if (!vertexValues.get(vertexId).equals(previous.get(vertexId))) {
                         ended = false;
-                        mainStrat.put(vertexId,argMax);
+                        mainStrat.put(vertexId, argMax);
                     }
                 }
                 if (vertexValues.get(vertexId) < minBorder) {
@@ -153,10 +151,10 @@ public class ValueIteration implements Algorithm {
     }
 
     @Override
-    public String[] getWinningRegion(){
+    public String[] getWinningRegion() {
         java.util.List<String> winningRegion = new ArrayList<>();
-        for(String vertexId:game.getGraph().getVertexsId()){
-            if(isInWinningRegion(vertexId)){
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            if (isInWinningRegion(vertexId)) {
                 winningRegion.add(vertexId);
             }
         }
@@ -197,10 +195,10 @@ public class ValueIteration implements Algorithm {
         return null;
     }
 
-    private Map<String,Integer> clonePreviousResult() {
-        Map<String,Integer> clone = new HashMap<>(vertexValues.size());
-        for (Map.Entry<String,Integer> entry:vertexValues.entrySet()) {
-            clone.put(entry.getKey(),entry.getValue());
+    private Map<String, Integer> clonePreviousResult() {
+        Map<String, Integer> clone = new HashMap<>(vertexValues.size());
+        for (Map.Entry<String, Integer> entry : vertexValues.entrySet()) {
+            clone.put(entry.getKey(), entry.getValue());
         }
         return clone;
     }
@@ -210,8 +208,8 @@ public class ValueIteration implements Algorithm {
             Attractor attractor = new Attractor();
             attractor.reset(game);
             attractor.compute();
-            for(String vertexId:game.getGraph().getVertexsId()){
-                if(!mainStrat.containsKey(vertexId)){
+            for (String vertexId : game.getGraph().getVertexsId()) {
+                if (!mainStrat.containsKey(vertexId)) {
                     String[] attrStrat = attractor.getStrategy(vertexId).getSelectedEdge();
                     if (attrStrat.length >= 1) {
                         mainStrat.put(vertexId, attrStrat[0]);

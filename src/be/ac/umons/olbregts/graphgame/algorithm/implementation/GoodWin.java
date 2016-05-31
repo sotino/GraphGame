@@ -1,8 +1,8 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
-import be.ac.umons.olbregts.graphgame.algorithm.WindowStrategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.WindowStrategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
@@ -21,8 +21,8 @@ public class GoodWin implements Algorithm {
 
     private WindowingQuantitativeGame game;
     private int l;
-    private Map<String,int[]> c;
-    private Map<String,WindowStrategy> strats;
+    private Map<String, int[]> c;
+    private Map<String, WindowStrategy> strats;
 
     @Override
     public void reset(Game game) throws IllegalGraphException {
@@ -34,9 +34,9 @@ public class GoodWin implements Algorithm {
         l = 0;
         c = new HashMap<>(n);
         strats = new HashMap<>(n);
-        for(String vertexId: game.getGraph().getVertexsId()){
-            c.put(vertexId,new int[this.game.getWindowsSize() + 1]);
-            strats.put(vertexId,new WindowStrategy(this.game.getWindowsSize()));
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            c.put(vertexId, new int[this.game.getWindowsSize() + 1]);
+            strats.put(vertexId, new WindowStrategy(this.game.getWindowsSize()));
         }
     }
 
@@ -56,7 +56,7 @@ public class GoodWin implements Algorithm {
     public void computeAStep() {
         if (!isEnded()) {
             l++;
-            for(String vertexId: game.getGraph().getVertexsId()){
+            for (String vertexId : game.getGraph().getVertexsId()) {
                 String[] succ = game.getGraph().getSuccessors(vertexId);
                 int[] succWeight = game.getGraph().getSuccessorsWeight(vertexId);
                 int[] cVertexId = c.get(vertexId);
@@ -65,9 +65,9 @@ public class GoodWin implements Algorithm {
                     for (int i = 0; i < succ.length; i++) {
                         int[] cSucc = c.get(succ[i]);
                         int current = oplus(succWeight[i], Math.max(cSucc[l - 1], cSucc[0]));
-                        if (max < current || i==0) {
+                        if (max < current || i == 0) {
                             max = current;
-                            strats.get(vertexId).setStrategies(game.getWindowsSize()-l,succ[i]);
+                            strats.get(vertexId).setStrategies(game.getWindowsSize() - l, succ[i]);
                         }
                     }
                     cVertexId[l] = max;
@@ -76,9 +76,9 @@ public class GoodWin implements Algorithm {
                     for (int i = 0; i < succ.length; i++) {
                         int[] cSucc = c.get(succ[i]);
                         int current = oplus(succWeight[i], Math.max(cSucc[l - 1], cSucc[0]));
-                        if (min > current || i==0) {
+                        if (min > current || i == 0) {
                             min = current;
-                            strats.get(vertexId).setStrategies(game.getWindowsSize()-l,succ[i]);
+                            strats.get(vertexId).setStrategies(game.getWindowsSize() - l, succ[i]);
                         }
                     }
                     cVertexId[l] = min;
@@ -87,15 +87,15 @@ public class GoodWin implements Algorithm {
         }
     }
 
-    private int oplus(int a,int b){
-        if(a == Integer.MAX_VALUE || a == Integer.MIN_VALUE){
+    private int oplus(int a, int b) {
+        if (a == Integer.MAX_VALUE || a == Integer.MIN_VALUE) {
             return a;
         }
-        if(b == Integer.MAX_VALUE || b == Integer.MIN_VALUE){
+        if (b == Integer.MAX_VALUE || b == Integer.MIN_VALUE) {
             return b;
         }
-        int sum = a+b;
-        if(sum < 0){
+        int sum = a + b;
+        if (sum < 0) {
             return Integer.MIN_VALUE;
         }
         return sum;
@@ -107,10 +107,10 @@ public class GoodWin implements Algorithm {
     }
 
     @Override
-    public String[] getWinningRegion(){
+    public String[] getWinningRegion() {
         java.util.List<String> winningRegion = new ArrayList<>();
-        for(String vertexId:game.getGraph().getVertexsId()){
-            if(isInWinningRegion(vertexId)){
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            if (isInWinningRegion(vertexId)) {
                 winningRegion.add(vertexId);
             }
         }
@@ -125,10 +125,10 @@ public class GoodWin implements Algorithm {
     @Override
     public String getLabel(String vertexId) {
         int value = c.get(vertexId)[l];
-        if(value == Integer.MAX_VALUE){
+        if (value == Integer.MAX_VALUE) {
             return "inf";
         }
-        if(value == Integer.MIN_VALUE){
+        if (value == Integer.MIN_VALUE) {
             return "- inf";
         }
         return "" + value;
@@ -141,7 +141,7 @@ public class GoodWin implements Algorithm {
 
     @Override
     public Color getEdgeColor(String srcId, String targetId) {
-        if(Arrays.stream(strats.get(srcId).getSelectedEdge()).anyMatch(targetId::equals)){
+        if (Arrays.stream(strats.get(srcId).getSelectedEdge()).anyMatch(targetId::equals)) {
             return Color.GREEN;
         }
         return null;

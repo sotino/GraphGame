@@ -5,8 +5,8 @@
 package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
-import be.ac.umons.olbregts.graphgame.algorithm.MemoryLessStrategy;
-import be.ac.umons.olbregts.graphgame.algorithm.Strategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.MemoryLessStrategy;
+import be.ac.umons.olbregts.graphgame.algorithm.strategy.Strategy;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
@@ -30,13 +30,13 @@ public class DijkstraTP implements Algorithm {
     // The heap Q that contains the fixed element not yet proccessed
     private Heap<QVertex> q;
     // Allow direct acces to a element of Q
-    private Map<String,QVertex> qElements;
+    private Map<String, QVertex> qElements;
     // The heap of each vertex. Allow to know the actual distance to targets.
-    private Map<String,Heap<VertexHeapElement>> vertexsHeap;
+    private Map<String, Heap<VertexHeapElement>> vertexsHeap;
     // Save the number of edge available for each vertex
-    private Map<String,Integer> availableEdges;
+    private Map<String, Integer> availableEdges;
     // Save the bocked edges
-    private Map<String,ArrayList<String>> blockedEdge;
+    private Map<String, ArrayList<String>> blockedEdge;
 
     @Override
     public void reset(Game game) throws IllegalGraphException {
@@ -113,10 +113,10 @@ public class DijkstraTP implements Algorithm {
     }
 
     @Override
-    public String[] getWinningRegion(){
+    public String[] getWinningRegion() {
         java.util.List<String> winningRegion = new ArrayList<>();
-        for(String vertexId:game.getGraph().getVertexsId()){
-            if(isInWinningRegion(vertexId)){
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            if (isInWinningRegion(vertexId)) {
                 winningRegion.add(vertexId);
             }
         }
@@ -169,10 +169,10 @@ public class DijkstraTP implements Algorithm {
         vertexsHeap = new HashMap<>(vertexCount);
         availableEdges = new HashMap<>(vertexCount);
         blockedEdge = new HashMap<>(vertexCount);
-        for(String vertexId:game.getGraph().getVertexsId()){
-            vertexsHeap.put(vertexId,new Heap<>());
-            availableEdges.put(vertexId,game.getGraph().getSuccessorCount(vertexId));
-            blockedEdge.put(vertexId,new ArrayList<>());
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            vertexsHeap.put(vertexId, new Heap<>());
+            availableEdges.put(vertexId, game.getGraph().getSuccessorCount(vertexId));
+            blockedEdge.put(vertexId, new ArrayList<>());
         }
         for (String target : targets) {
             vertexsHeap.get(target).insert(new VertexHeapElement(0, null));
@@ -194,8 +194,8 @@ public class DijkstraTP implements Algorithm {
         QVertex[] v = new QVertex[vertexCount];
         int targetPointer = 0;
         int otherPointer = targets.length;
-        for(String vertexId:game.getGraph().getVertexsId()){
-        //for (int i = 0; i < vertexCount; i++) {
+        for (String vertexId : game.getGraph().getVertexsId()) {
+            //for (int i = 0; i < vertexCount; i++) {
             if (isTarget(vertexId)) {
                 v[targetPointer] = new QVertex(vertexId);
                 qElements.put(vertexId, v[targetPointer]);
@@ -226,7 +226,7 @@ public class DijkstraTP implements Algorithm {
     }
 
     private boolean isValid(Game game) {
-        for(String vertexId: game.getGraph().getVertexsId()){
+        for (String vertexId : game.getGraph().getVertexsId()) {
             for (int w : game.getGraph().getSuccessorsWeight(vertexId)) {
                 if (w < 0)
                     return false;

@@ -16,14 +16,12 @@ public class Vertex {
     private int player;
     private ArrayList<Edge> predecessor;
     private ArrayList<Edge> successor;
-    private int availableEdge;
 
     public Vertex(String id, int player) {
         this.id = id;
         predecessor = new ArrayList<>();
         successor = new ArrayList<>();
         this.player = player;
-        availableEdge = 0;
     }
 
     public String getId() {
@@ -36,10 +34,6 @@ public class Vertex {
 
     public int getPlayer() {
         return player;
-    }
-
-    public int getAvailableEdge() {
-        return availableEdge;
     }
 
     public List<Edge> getPred() {
@@ -61,11 +55,7 @@ public class Vertex {
         if (isSucc(succ.getTarget())) {
             return false;
         }
-        boolean result = successor.add(succ);
-        if (result) {
-            availableEdge++;
-        }
-        return result;
+        return successor.add(succ);
     }
 
     public void removePred(Vertex pred) {
@@ -108,6 +98,6 @@ public class Vertex {
 
     @Override
     public String toString() {
-        return "[V" + id + ']';
+        return id;
     }
 }

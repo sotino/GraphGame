@@ -5,15 +5,15 @@
 package be.ac.umons.olbregts.graphgame.io;
 
 import be.ac.umons.olbregts.graphgame.model.Graph;
-import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.Edge;
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
-import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.Vertex;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Locale;
+import java.util.Scanner;
 
 /**
  * @author Simon
@@ -68,70 +68,41 @@ public class GraphLoader {
 
     public static void saveGraph(Graph graph, String filePath) throws UnsupportedEncodingException, FileNotFoundException {
 
-        //Map<String, ArrayList<String>> successor = new HashMap<>(graph.getVertexCount());
         String[] vertedsId = graph.getVertexsId();
-        /*for(String vertexId: vertedsId){
-            successor.put(vertexId,new ArrayList<>());
-        }
-
-        for(String vertexId: vertedsId){
-            for(String succId:graph.getSuccessors(vertexId)){
-                successor.get(vertexId).add(succId);
-            }
-        }*/
-
-      /*  for (Vertex v : graph.getVertexs()) {
-            for (Edge e : v.getPred()) {
-                successor.get(e.getSource().getIndex()).add(e);
-            }
-        }*/
 
         PrintWriter writer = new PrintWriter(filePath, "UTF-8");
         //Head
         int current = 1;
-        for(String vertexId:vertedsId){
+        for (String vertexId : vertedsId) {
             writer.print("" + current + " ");
             current += graph.getSuccessorCount(vertexId);
         }
-        /*
-        for (int i = 0; i < successor.size(); i++) {
-            writer.print("" + current + " ");
-            current += successor.get(i).size();
-        }*/
         writer.println("" + current);
 
         //Player
-        for(String vertexId:vertedsId){
+        for (String vertexId : vertedsId) {
             writer.print("" + graph.getPlayer(vertexId) + " ");
         }
         writer.println();
 
         //Succ
-        for(String vertexId:vertedsId){
-        //for (int i = 0; i < vertedsId.size(); i++) {
+        for (String vertexId : vertedsId) {
             for (String succ : graph.getSuccessors(vertexId)) {
-                for(int i =0;i<vertedsId.length;i++){
-                    if(vertedsId[i].equals(succ)){
-                        writer.print("" + (i+1)+" ");
+                for (int i = 0; i < vertedsId.length; i++) {
+                    if (vertedsId[i].equals(succ)) {
+                        writer.print("" + (i + 1) + " ");
                     }
                 }
-                //writer.print("" + ( e.getTarget().getIndex() + 1) + " ");
             }
         }
         writer.println();
 
         //Cost
-        for(String vertexId: vertedsId){
-            for(int cost:graph.getSuccessorsWeight(vertexId)){
-                writer.print(""+ cost+" ");
+        for (String vertexId : vertedsId) {
+            for (int cost : graph.getSuccessorsWeight(vertexId)) {
+                writer.print("" + cost + " ");
             }
         }
-        /*
-        for (int i = 0; i < successor.size(); i++) {
-            for (Edge e : successor.get(i)) {
-                writer.print("" + e.getCost() + " ");
-            }
-        }*/
         writer.println();
         writer.close();
     }
