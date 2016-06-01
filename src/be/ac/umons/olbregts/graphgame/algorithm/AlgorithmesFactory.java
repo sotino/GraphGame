@@ -48,7 +48,7 @@ public class AlgorithmesFactory {
                 try {
                     alg = Class.forName(values[1]).newInstance();
                 } catch (InstantiationException e) {
-                    throw new ParseException("The class " + values[1] + " can't be instantiated. Remeber that the constructeur must have no parameters", 0);
+                    throw new ParseException("The class " + values[1] + " can't be instantiated. Remember that the constructor must have no parameters", 0);
                 } catch (IllegalAccessException e) {
                     throw new ParseException("The constructor of the class " + values[1] + " can't be accessed. Check constructor visibility", 0);
                 } catch (ClassNotFoundException e) {
@@ -64,7 +64,7 @@ public class AlgorithmesFactory {
                 try {
                     wp = Class.forName(values[2]).newInstance();
                 } catch (InstantiationException e) {
-                    throw new ParseException("The class " + values[2] + " can't be instantiated. Remeber that the constructeur must have no parameters", 0);
+                    throw new ParseException("The class " + values[2] + " can't be instantiated. Remember that the constructor must have no parameters", 0);
                 } catch (IllegalAccessException e) {
                     throw new ParseException("The constructor of the class " + values[2] + " can't be accessed. Check constructor visibility", 0);
                 } catch (ClassNotFoundException e) {

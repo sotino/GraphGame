@@ -78,7 +78,6 @@ public class GraphPanel extends JPanel {
         this.algorithm = algorithm;
         graphComponent.getViewport().setOpaque(true);
         graphComponent.getViewport().setBackground(Color.WHITE);
-        //vertexsView = new ArrayList<>();
         graphComponent.getGraph().setAllowDanglingEdges(false);
         setEditable(false);
         displayGraph();
@@ -122,7 +121,6 @@ public class GraphPanel extends JPanel {
     }
 
     public void setEditable(boolean editable) {
-        //graphComponent.getGraph().setCellsLocked(!editable);
         graphComponent.getGraph().setCellsSelectable(editable);
         graphComponent.getGraph().setEnabled(!editable);
         graphComponent.getGraph().setConnectableEdges(editable);

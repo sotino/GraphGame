@@ -3,7 +3,6 @@ package be.ac.umons.olbregts.graphgame.algorithm.implementation;
 import be.ac.umons.olbregts.graphgame.algorithm.Algorithm;
 import be.ac.umons.olbregts.graphgame.algorithm.strategy.*;
 import be.ac.umons.olbregts.graphgame.exception.IllegalGraphException;
-import be.ac.umons.olbregts.graphgame.io.GraphLoader;
 import be.ac.umons.olbregts.graphgame.model.Game;
 import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.WindowReachGame;
@@ -11,9 +10,6 @@ import be.ac.umons.olbregts.graphgame.model.implementation.games.WindowingQuanti
 import be.ac.umons.olbregts.graphgame.model.implementation.objectoriented.GraphObjectOriented;
 
 import java.awt.*;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 import java.util.List;
 

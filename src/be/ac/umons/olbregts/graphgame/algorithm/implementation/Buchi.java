@@ -79,7 +79,7 @@ public class Buchi implements Algorithm {
                 String[] trapStrat = trap.getStrategy(toRemoveId).getSelectedEdge();
                 if (trapStrat.length > 0) {
                     strat.put(toRemoveId, trapStrat[0]);
-                    /** The traping strategy can force to visit a vertex of the winning condition
+                    /** The trapping strategy can force to visit a vertex of the winning condition
                      * if one the winning vertex is in the winning region of the player 2
                      */
                     if (game.getWiningCondition().contains(trapStrat[0])) {

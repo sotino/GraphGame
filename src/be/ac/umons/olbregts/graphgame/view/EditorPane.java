@@ -61,13 +61,6 @@ public class EditorPane extends JPanel {
         menu.add(delete);
         delete.addActionListener(e -> EditorPane.this.graphPanel.deleteSelected());
         menu.add(Box.createVerticalStrut(12));
-/*
-        JButton layout = new JButton("Apply layout");
-        layout.setMaximumSize(new Dimension(Integer.MAX_VALUE, layout.getMaximumSize().height));
-        menu.add(layout);
-        layout.addActionListener(e -> EditorPane.this.graphPanel.applyLayout());
-        menu.add(Box.createVerticalStrut(12));*/
-
         JButton save = new JButton("Save");
         save.setMaximumSize(new Dimension(Integer.MAX_VALUE, save.getMaximumSize().height));
         menu.add(save);
@@ -81,7 +74,7 @@ public class EditorPane extends JPanel {
             }
             if (fileName != null) {
                 try {
-                    GraphLoader.saveGraph((GraphObjectOriented) graphPanel.getGraphModel(), fileName);
+                    GraphLoader.saveGraph(graphPanel.getGraphModel(), fileName);
                 } catch (UnsupportedEncodingException ex) {
                     JOptionPane.showMessageDialog(EditorPane.this, "UTF-8 encoding was not supported.\nThe graph was not saved.", "Error during the save", JOptionPane.ERROR_MESSAGE);
                 } catch (FileNotFoundException ex) {
