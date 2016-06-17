@@ -1,5 +1,5 @@
 Name;Algorithm;WinningPanel
-Attractor;be.ac.umons.olbregts.graphgame.algorithm.implementation.Attractor;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
+Reachability;be.ac.umons.olbregts.graphgame.algorithm.implementation.Attractor;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
 Safety;be.ac.umons.olbregts.graphgame.algorithm.implementation.Safety;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
 Buchi;be.ac.umons.olbregts.graphgame.algorithm.implementation.Buchi;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
 Co Buchi;be.ac.umons.olbregts.graphgame.algorithm.implementation.CoBuchi;be.ac.umons.olbregts.graphgame.view.wining_condition.ReachabilityPanel
@@ -11,4 +11,5 @@ Direct Fixed Windowing Mean Payoff;be.ac.umons.olbregts.graphgame.algorithm.impl
 Fixed Windowing Mean Payoff;be.ac.umons.olbregts.graphgame.algorithm.implementation.FWMP;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowingQuantitativePanel
 ICWEnd;be.ac.umons.olbregts.graphgame.algorithm.implementation.ICWEnd;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowReachPanel
 GDWEnd;be.ac.umons.olbregts.graphgame.algorithm.implementation.GDEnd;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowReachPanel
-Nouveau;NFWMP;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowReachPanel
+WMP & Safety;be.ac.umons.olbregts.graphgame.algorithm.implementation.WmpSafe;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowReachPanel
+WMP & Reachability;be.ac.umons.olbregts.graphgame.algorithm.implementation.WmpReach;be.ac.umons.olbregts.graphgame.view.wining_condition.WindowReachPanel

@@ -210,7 +210,8 @@ public class BenchMark extends JPanel {
             int testCount = 0;
             mainLoop:
             for (int size = start; size <= end; size += step) {
-                consoleArea.append("Graph size: " + size + '\n');
+                int finalSize = size;
+                SwingUtilities.invokeLater(() -> consoleArea.append("Graph size: " + finalSize + '\n'));
                 writeResult(size + " ");
                 Graph graph = generateGraph(size);
                 for (AlgorithmInfo algoInfo : selectedAlgo) {
@@ -222,16 +223,16 @@ public class BenchMark extends JPanel {
                         alg.compute();
                         final long endTime = System.nanoTime();
                         final long timeElapsed = (endTime - startTime) / 1000000;
-                        consoleArea.append("  Algo " + algoInfo.getName() + ": " + timeElapsed + "ms\n");
+                        SwingUtilities.invokeLater(()->consoleArea.append("  Algo " + algoInfo.getName() + ": " + timeElapsed + "ms\n"));
                         writeResult(timeElapsed + " ");
                     } catch (IllegalGraphException e) {
-                        consoleArea.append("  Algo " + algoInfo.getName() + " failled:" + e.getMessage() + '\n');
+                        SwingUtilities.invokeLater(()->consoleArea.append("  Algo " + algoInfo.getName() + " failled:" + e.getMessage() + '\n'));
                         return null;
                     }
                     testCount++;
                     publish(testCount);
                     if (Thread.currentThread().isInterrupted()) {
-                        consoleArea.append("Computation interrupted\n");
+                        SwingUtilities.invokeLater(()->consoleArea.append("Computation interrupted\n"));
                         break mainLoop;
                     }
                 }
@@ -239,7 +240,7 @@ public class BenchMark extends JPanel {
             }
             publish(0);
             workedLaunched = false;
-            launch.setText("Launch");
+            SwingUtilities.invokeLater(()->launch.setText("Launch"));
             closeResultFile();
             return null;
         }
