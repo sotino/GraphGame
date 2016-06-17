@@ -9,10 +9,8 @@ import be.ac.umons.olbregts.graphgame.model.Graph;
 import be.ac.umons.olbregts.graphgame.model.implementation.games.ReachibilityGame;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Simon on 19-01-16.
@@ -54,10 +52,16 @@ public class Buchi implements Algorithm {
 
     @Override
     public void computeAStep() {
+        for(String id : g.getVertexsId()){
+            System.out.print(" "+id);
+        }
+        System.out.println();
         ended = true;
         Attractor attr = new Attractor();
         try {
-            ReachibilityGame attrGame = new ReachibilityGame(g, game.getWiningCondition());
+            List<String> condition = new LinkedList<>();
+            this.game.getWiningCondition().stream().forEach((e) -> {if(g.contains(e)) condition.add(e);});
+            ReachibilityGame attrGame = new ReachibilityGame(g, condition);
             attr.reset(attrGame);
             attr.setWinningPlayer(winningPlayer);
             attr.compute();
