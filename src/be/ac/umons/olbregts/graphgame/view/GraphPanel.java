@@ -88,20 +88,7 @@ public class GraphPanel extends JPanel {
             if (edge.getTarget().isVertex()) {
                 String srcId = edge.getSource().getId();
                 String targetId = edge.getTarget().getId();
-                Integer cost = null;
-                String msg = "Type edge cost";
-                while (cost == null) {
-                    String s = JOptionPane.showInputDialog(msg);
-                    if (s == null) {
-                        break;
-                    }
-                    try {
-                        cost = Integer.parseInt(s);
-                    } catch (NumberFormatException nfe) {
-                        cost = null;
-                        msg = "The cost must be an integer\n Type edge cost";
-                    }
-                }
+                Integer cost = askCost();
                 if (cost != null) {
                     edgeAdded = GraphPanel.this.model.addEdge(srcId, targetId, cost);
                     edge.setValue("" + cost);
@@ -118,6 +105,37 @@ public class GraphPanel extends JPanel {
             parentFrame = (Frame) parentWindow;
         }
         stratDialog = new StrategiesViewDialog(parentFrame);
+    }
+
+    private Integer askCost() {
+        Integer cost = null;
+        String msg = "Type edge cost";
+        while (cost == null) {
+            String s = JOptionPane.showInputDialog(msg);
+            if (s == null) {
+                break;
+            }
+            try {
+                cost = Integer.parseInt(s);
+            } catch (NumberFormatException nfe) {
+                cost = null;
+                msg = "The cost must be an integer\n Type edge cost";
+            }
+        }
+        return cost;
+    }
+
+    public void addLoopToSelected(){
+        mxCell c = ((mxCell) graphComponent.getGraph().getSelectionCell());
+        if(c.isVertex()) {
+            String vertexId = c.getId();
+            Integer cost = askCost();
+            if (cost != null) {
+                model.addEdge(vertexId, vertexId, cost);
+                Object parent = graphComponent.getGraph().getDefaultParent();
+                graphComponent.getGraph().insertEdge(parent, null, "" + cost, getVertexView(vertexId), getVertexView(vertexId), "labelBackgroundColor=white");
+            }
+        }
     }
 
     public void setEditable(boolean editable) {
