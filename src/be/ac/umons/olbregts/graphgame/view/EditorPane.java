@@ -60,7 +60,7 @@ public class EditorPane extends JPanel {
         delete.setMaximumSize(new Dimension(Integer.MAX_VALUE, delete.getMaximumSize().height));
         menu.add(delete);
         delete.addActionListener(e -> EditorPane.this.graphPanel.deleteSelected());
-        JButton loop = new JButton("Add loop");
+        JButton loop = new JButton("Add loop to selected");
         loop.setMaximumSize(new Dimension(Integer.MAX_VALUE, loop.getMaximumSize().height));
         menu.add(loop);
         loop.addActionListener(e -> EditorPane.this.graphPanel.addLoopToSelected());

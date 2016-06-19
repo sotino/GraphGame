@@ -127,7 +127,7 @@ public class GraphPanel extends JPanel {
 
     public void addLoopToSelected(){
         mxCell c = ((mxCell) graphComponent.getGraph().getSelectionCell());
-        if(c.isVertex()) {
+        if(c != null && c.isVertex()) {
             String vertexId = c.getId();
             Integer cost = askCost();
             if (cost != null) {
