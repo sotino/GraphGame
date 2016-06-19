@@ -288,11 +288,11 @@ public class BenchMark extends JPanel {
             }
 
             try {
-                File folder = new File("generated");
+                File folder = new File(GraphLoader.getDirectoryPath(),"generated");
                 if (!folder.exists()) {
                     folder.mkdir();
                 }
-                GraphLoader.saveGraph(graph, "generated/generated_" + size + ".graph");
+                GraphLoader.saveGraph(graph,GraphLoader.getDirectoryPath() + "/generated/generated_" + size + ".graph");
             } catch (UnsupportedEncodingException | FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -312,12 +312,12 @@ public class BenchMark extends JPanel {
         private void initResultFile() {
             File resultFile;
             int i = 0;
-            File folder = new File("benchmark");
+            File folder = new File(GraphLoader.getDirectoryPath(),"benchmark");
             if (!folder.exists()) {
                 folder.mkdir();
             }
             do {
-                resultFile = new File("benchmark/benchmark_" + i + ".dat");
+                resultFile = new File(GraphLoader.getDirectoryPath(),"benchmark/benchmark_" + i + ".dat");
                 i++;
             } while (resultFile.exists());
             fileWriter = null;

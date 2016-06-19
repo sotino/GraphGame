@@ -70,11 +70,11 @@ public class GraphGame {
 
         }
         try {
-            File folder = new File("generated");
+            File folder = new File(GraphLoader.getDirectoryPath(),"generated");
             if (!folder.exists()) {
                 folder.mkdir();
             }
-            GraphLoader.saveGraph(g, "generated/exemple.graph");
+            GraphLoader.saveGraph(g, GraphLoader.getDirectoryPath()+"/generated/exemple.graph");
         } catch (UnsupportedEncodingException | FileNotFoundException e) {
             e.printStackTrace();
         }

@@ -80,7 +80,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+            JFileChooser fc = new JFileChooser(GraphLoader.getDirectoryPath());
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 String fileName = fc.getSelectedFile().getAbsolutePath();
@@ -94,7 +94,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {
         try {
-            JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+            JFileChooser fc = new JFileChooser(GraphLoader.getDirectoryPath());
             int returnVal = fc.showOpenDialog(this);
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 String fileName = fc.getSelectedFile().getAbsolutePath();

@@ -1,5 +1,6 @@
 package be.ac.umons.olbregts.graphgame.algorithm;
 
+import be.ac.umons.olbregts.graphgame.io.GraphLoader;
 import be.ac.umons.olbregts.graphgame.view.wining_condition.WinningPanel;
 
 import java.io.File;
@@ -28,7 +29,7 @@ public class AlgorithmesFactory {
     private static List<AlgorithmInfo> loadAlgorithm() throws ParseException {
         try {
             List<AlgorithmInfo> algorithms = new ArrayList<>();
-            Scanner fileScanner = new Scanner(new File("algorithm.csv"));
+            Scanner fileScanner = new Scanner(new File(GraphLoader.getDirectoryPath(),"algorithm.csv"));
             if (!fileScanner.hasNextLine()) {
                 throw new ParseException("The file is empty", 0);
             }

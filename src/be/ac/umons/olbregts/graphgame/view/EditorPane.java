@@ -71,7 +71,7 @@ public class EditorPane extends JPanel {
         menu.add(save);
         save.addActionListener(e -> {
             if (fileName == null) {
-                JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+                JFileChooser fc = new JFileChooser(GraphLoader.getDirectoryPath());
                 int returnVal = fc.showSaveDialog(EditorPane.this);
                 if (returnVal == JFileChooser.APPROVE_OPTION) {
                     fileName = fc.getSelectedFile().getAbsolutePath();

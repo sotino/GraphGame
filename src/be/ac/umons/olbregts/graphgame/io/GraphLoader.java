@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Scanner;
@@ -19,6 +20,21 @@ import java.util.Scanner;
  * @author Simon
  */
 public class GraphLoader {
+
+    private static String directoryPath;
+
+    public static String getDirectoryPath(){
+        if(directoryPath == null){
+            try {
+                File jarFile = new File(GraphLoader.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
+                directoryPath = jarFile.getParentFile().getPath();
+            } catch (Exception e) {
+                System.err.println("Can't find jar location. Set relative path to working directory");
+                directoryPath = ".";
+            }
+        }
+        return directoryPath;
+    }
 
     public static GraphObjectOriented loadGraph(String filePath) throws FileNotFoundException {
 
